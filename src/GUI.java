@@ -84,7 +84,7 @@ public class GUI extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			System.exit(0);
-			
+			// exit app
 			
 		}
 		
