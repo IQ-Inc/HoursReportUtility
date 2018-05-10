@@ -22,7 +22,7 @@ public class GUI extends JPanel {
 		super(new BorderLayout());
 		this.frame = frame;
 		
-		JLabel label = new JLabel("Please select a file to open");
+		JLabel label = new JLabel("Select A File");
 		
 		//create the panel to add it to
 		JPanel topPane = new JPanel();
