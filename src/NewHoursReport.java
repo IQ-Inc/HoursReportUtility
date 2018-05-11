@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -13,6 +14,8 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -26,16 +29,17 @@ public class NewHoursReport extends JPanel  {
 	
 	public static void main(String[] args) {
 		
-		JFrame frame = new JFrame();
-		NewHoursReport report = new NewHoursReport(frame);
+		
+		NewHoursReport report = new NewHoursReport();
 		
 		
 	}
 
 	
-		public NewHoursReport(JFrame frame) {
+		public NewHoursReport() {
 		super(new BorderLayout());
-		this.frame = frame;
+		
+		this.frame = new JFrame();
 		
 		JLabel label = new JLabel("Please select a file to open");
 		
@@ -64,7 +68,7 @@ public class NewHoursReport extends JPanel  {
 		
 	}
 	
-	public JButton createButton(int width, int height, String name) {
+	public static JButton createButton(int width, int height, String name) {
 		JButton button = new JButton();
 		button.setSize(width, height);
 		button.setText(name);
@@ -82,21 +86,55 @@ public class NewHoursReport extends JPanel  {
 		return frame;
 	}
 	
-	public static JFrame changeDatePane(JFrame frame, JPanel topPane, JPanel bottomPane) {
-		// Note to self - Use box layout here to make labels and text fields even
-		// Not finished yet
-		topPane = new JPanel();
-		bottomPane = new JPanel();
+	public static JFrame changeDatePane() {
+		JFrame frame = new JFrame("Change Dates");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//Buttons
+		JButton next = createButton(40,40,"Next");
+		JButton back = createButton(40,40,"Back");
+		
+		//Create Labels
 		JLabel start = new JLabel("Start Date");
 		JLabel end = new JLabel("End Date");
 		
-		frame = createJFrame(topPane, bottomPane,300, 100);
+		//TextFields
+		JTextField startDate = new JTextField("MM/DD/YYYY");
+		JTextField endDate = new JTextField("MM/DD/YYYY");
+		
+		//Create Panes and Layouts
+		JPanel leftPane = new JPanel();
+		leftPane.setLayout(new BoxLayout(leftPane, BoxLayout.Y_AXIS));
+		JPanel rightPane = new JPanel();
+		JPanel bottomPane = new JPanel();
+		bottomPane.add(back);
+		bottomPane.add(Box.createHorizontalGlue());
+		bottomPane.add(next);
+		
+		//add components to pane
+		rightPane.setLayout(new BoxLayout(rightPane, BoxLayout.Y_AXIS));
+		leftPane.add(start);
+		leftPane.add(Box.createVerticalGlue());
+		leftPane.add(startDate);
+		
+		rightPane.add(end);
+		rightPane.add(Box.createVerticalGlue());
+		rightPane.add(endDate);
+		
+		
+		//add everything to pane
+		frame.add(bottomPane, BorderLayout.PAGE_END);
+		frame.add(leftPane, BorderLayout.WEST);
+		frame.add(Box.createHorizontalGlue());
+		frame.add(rightPane, BorderLayout.EAST);
+		frame.pack();
+		frame.setVisible(true);
 		
 		return frame;
-	}
+		}
 	
 	
-	public static void readFile(JFileChooser fileChooser, int result) {
+	public static void readFile( JFileChooser fileChooser) {
 		
 		
 		try {
@@ -107,25 +145,24 @@ public class NewHoursReport extends JPanel  {
 				XSSFSheet sheet = workbook.getSheetAt(0);
 				
 				//Iterator to scan through sheets
-				Iterator<Row> rowIterator = sheet.iterator();
+				Iterator<Row> rows = sheet.rowIterator();
 				
-				while (rowIterator.hasNext()) {
-					Row row = rowIterator.next();
+				while (rows.hasNext()) {
+					XSSFRow row = (XSSFRow)rows.next();
 					
-					Iterator<Cell> cellIterator = row.cellIterator();
+					Iterator<Cell> cells = row.cellIterator();
 					
-					while (cellIterator.hasNext()) {
-						Cell cell = cellIterator.next();
-						
-						switch (cell.getCellType()) {
-						case Cell.CELL_TYPE_NUMERIC:
-							// Method to write to file instead of console (for both case)
-							System.out.print(cell.getNumericCellValue() + "\t");
-							
-							break;
-						case Cell.CELL_TYPE_STRING:
-							System.out.print(cell.getStringCellValue() + "\t");
+					while (cells.hasNext()) {
+						XSSFCell cell = (XSSFCell) cells.next();
+							switch(cell.getCellType()) {
+							case XSSFCell.CELL_TYPE_NUMERIC:
+								System.out.println(cell.getNumericCellValue());
+								break;
+							case XSSFCell.CELL_TYPE_STRING:
+								System.out.println(cell.getStringCellValue());
+								break;
 						}
+				
 					}
 				}
 	
@@ -133,10 +170,14 @@ public class NewHoursReport extends JPanel  {
 			JOptionPane.showMessageDialog(new JFrame(), "File not found.");
 		}
 		JOptionPane.showConfirmDialog(fileChooser, "Overwrite Start and End Dates?");
-		if (true) { // <-----add here after creating pane to hold start end dates
-			
-			
+		int result = JOptionPane.OK_OPTION;
+		
+				if (result != JOptionPane.OK_OPTION) { // <-----add here after creating pane to hold start end dates
+			System.exit(0);
+		} else {
+			changeDatePane();
 		}
+		
 		
 	}
 	
@@ -160,9 +201,12 @@ public class NewHoursReport extends JPanel  {
 				File fileToOpen = fileChooser.getSelectedFile();
 				JOptionPane.showConfirmDialog(fileChooser, "Read File?", "File Reader", 
 						JOptionPane.YES_NO_OPTION);
-			int result = JOptionPane.OK_OPTION;
-				if(result == JOptionPane.OK_OPTION) {
-					readFile(fileChooser, result);
+			String result = JOptionPane.showInputDialog(null);
+				if(result.equals(JOptionPane.OK_OPTION)){
+					readFile(fileChooser);
+					
+				}else if (result.equals(JOptionPane.NO_OPTION)) {
+					findFile();
 				}
 		}
 		
@@ -171,6 +215,11 @@ public class NewHoursReport extends JPanel  {
 			JOptionPane.showMessageDialog(new JFrame(), "File not found.");
 		}
 		}
+	
+	//Over-write method here <-------------
+	
+		 
+	
 	
 	//Listener classes
 	
@@ -193,6 +242,16 @@ public class NewHoursReport extends JPanel  {
 		public void actionPerformed(ActionEvent e) {
 			System.exit(0);
 			
+			
+		}
+		
+	}
+	
+	public static class backListenerClass implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			//add something here 
 			
 		}
 		
