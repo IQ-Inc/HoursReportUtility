@@ -4,7 +4,9 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.text.DateFormat;
 import java.text.NumberFormat.Field;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -12,8 +14,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -25,15 +32,26 @@ public class NewHoursReport extends JPanel  {
 	JFrame frame;
 	JLabel label;
 	Date date;
+	static String [] header = {"Project, Date, Name, Billing Status, Duration"};
+	static ArrayList<String> projects = new ArrayList<>();
+	static ArrayList<Date> dates = new ArrayList<>();
+	static ArrayList<String>billingStatus = new ArrayList<>();
+	static ArrayList<Double>duration = new ArrayList<>();
+	static ArrayList<String> names = new ArrayList<>();
 	
 	
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws IOException {
 		
 		NewHoursReport report = new NewHoursReport();
+		createOutputBook();
 		
-		
+		 
 	}
+		
+		
+		
+		
+	
 
 	
 		public NewHoursReport() {
@@ -134,7 +152,8 @@ public class NewHoursReport extends JPanel  {
 		}
 	
 	
-	public static void readFile( JFileChooser fileChooser) {
+	public static void readFile( JFileChooser fileChooser, List projects, List dates,
+			List status, List duration, List names) {
 		
 		
 		try {
@@ -142,7 +161,7 @@ public class NewHoursReport extends JPanel  {
 				File selectedFile = fileChooser.getSelectedFile();
 				FileInputStream fileInput = new FileInputStream(selectedFile);
 				XSSFWorkbook workbook = new XSSFWorkbook(fileInput);
-				XSSFSheet sheet = workbook.getSheetAt(0);
+				XSSFSheet sheet = workbook.getSheetAt(1);
 				
 				//Iterator to scan through sheets
 				Iterator<Row> rows = sheet.rowIterator();
@@ -152,30 +171,36 @@ public class NewHoursReport extends JPanel  {
 					
 					Iterator<Cell> cells = row.cellIterator();
 					
-					while (cells.hasNext()) {
+					while (cells.hasNext()) { 
 						XSSFCell cell = (XSSFCell) cells.next();
-							switch(cell.getCellType()) {
-							case XSSFCell.CELL_TYPE_NUMERIC:
-								System.out.println(cell.getNumericCellValue());
-								break;
-							case XSSFCell.CELL_TYPE_STRING:
-								System.out.println(cell.getStringCellValue());
-								break;
-						}
+						// If statements to fill proper arrays with data 
+						// to append to output arrays
+					if (cell.getColumnIndex() == 1) {
+						projects.add(cell);
+					} else if (cell.getColumnIndex() == 4) {
+						dates.add(cell);
+					} else if (cell.getColumnIndex() == 6) {
+						names.add(cell);
+					} else if (cell.getColumnIndex() == 7) {
+						status.add(cell);
+					} else if (cell.getColumnIndex() == 8) {
+						duration.add(cell);
+					}
 				
 					}
 				}
+				
 	
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(new JFrame(), "File not found.");
 		}
-		JOptionPane.showConfirmDialog(fileChooser, "Overwrite Start and End Dates?");
-		int result = JOptionPane.OK_OPTION;
 		
-				if (result != JOptionPane.OK_OPTION) { // <-----add here after creating pane to hold start end dates
-			System.exit(0);
+		
+		int n = JOptionPane.showConfirmDialog(fileChooser, "Overwrite Start and End Dates?");
+				if (n == JOptionPane.OK_OPTION) { 
+				changeDatePane();
 		} else {
-			changeDatePane();
+			System.exit(0);
 		}
 		
 		
@@ -201,11 +226,11 @@ public class NewHoursReport extends JPanel  {
 				File fileToOpen = fileChooser.getSelectedFile();
 				JOptionPane.showConfirmDialog(fileChooser, "Read File?", "File Reader", 
 						JOptionPane.YES_NO_OPTION);
-			String result = JOptionPane.showInputDialog(null);
-				if(result.equals(JOptionPane.OK_OPTION)){
-					readFile(fileChooser);
+			int result = JOptionPane.OK_OPTION;
+				if(result == JOptionPane.OK_OPTION) { 
+					readFile(fileChooser, projects, dates, billingStatus, duration, names);
 					
-				}else if (result.equals(JOptionPane.NO_OPTION)) {
+				}else if (result == JOptionPane.NO_OPTION) {
 					findFile();
 				}
 		}
@@ -216,12 +241,73 @@ public class NewHoursReport extends JPanel  {
 		}
 		}
 	
-	//Over-write method here <-------------
+	public static XSSFWorkbook createOutputBook () throws IOException {
 	
-		 
+		
+		
+		//Create new workbook
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		CreationHelper createHelper = workbook.getCreationHelper();
+		
+		// Create Sheets
+		Sheet sheet0 = workbook.createSheet("Profitability");
+		Sheet sheet1 = workbook.createSheet("Utilization");
+		
+		//Format
+		Font headerFont = workbook.createFont();
+		headerFont.setBold(true);
+		headerFont.setFontHeightInPoints((short)8);
+		headerFont.setColor(IndexedColors.BLUE.getIndex());
+		
+		//Create a cell style using the font
+		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setFont(headerFont);
+		
+		//Create Row
+		Row headerRow = sheet0.createRow(0);
+		
+		//Create Cells
+		for (int i = 0; i < header.length; i++) {
+			Cell cell = headerRow.createCell(i);
+			cell.setCellValue(header[i]);
+			cell.setCellStyle(headerCellStyle);
+			
+		//Create Date Format cells
+		CellStyle dateCellStyle = workbook.createCellStyle();
+		dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("MM-dd-yyyy"));
+		}
+	
+		
+		for (int i = 0; i < projects.size(); i++) {
+			Row row = sheet0.createRow(i);
+			row.createCell(0).setCellValue(projects.get(i));
+			System.out.println(row.getCell(i));
+			row.createCell(1).setCellValue(dates.get(i));
+			row.createCell(2).setCellValue(names.get(i));
+			row.createCell(3).setCellValue(billingStatus.get(i));
+			row.createCell(4).setCellValue(duration.get(i));
+			
+			FileOutputStream fileOut = new FileOutputStream("C://temp//Hours_" + 
+			getCurrentTimeStamp() + ".xlsx");
+			fileOut.write(i);
+			fileOut.close();
+			workbook.close();
+		
+}
+		return workbook;
+	}
+	
+	public static String getCurrentTimeStamp() {
+		SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd HHmmss");
+		Date now = new Date();
+		String strDate = df.format(now);
+		return strDate;
+	}
 	
 	
-	//Listener classes
+	
+	
+//Listener classes
 	
 	public static class browseListenerClass implements ActionListener{
 
