@@ -264,7 +264,7 @@ public class NewHoursReport extends JPanel  {
 				XSSFSheet sheet2 = wb.createSheet("Utilization");
 				
 			
-				
+			 
 				CellStyle headerCellStyle = wb.createCellStyle();
 				
 				
