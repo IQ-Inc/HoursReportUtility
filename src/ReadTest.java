@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -27,42 +28,46 @@ public class ReadTest {
 	
 	public static final String OUTPUT_FILE = "Hours_" + getCurrentTimeStamp() +
 			".xlsx";
-	 public static ArrayList<Object> fields = new ArrayList<>();
+	static ArrayList<Object> fields = new ArrayList<>();
+	
+	
+	
 	
 	
 	public static void main(String[] args) throws IOException {
+		
 		JFileChooser fileChooser = new JFileChooser();
-		
 		int status = fileChooser.showOpenDialog(null);
-		
-		if (status == fileChooser.APPROVE_OPTION) {
-			File selectedFile = fileChooser.getSelectedFile();
-			fileReader(selectedFile, fields, fileChooser);
+		try {
+		if (status == JFileChooser.APPROVE_OPTION) {
+			File fileToOpen = fileChooser.getSelectedFile();
+			fileReader(fileChooser, fileToOpen, fields);
 		}
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	}
 		
-		
-		
-		
-		
-		
-		
-}
+		createOutputFile(OUTPUT_FILE, fields);
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		writeFile(workbook, OUTPUT_FILE);
+	}
 	
-	
-	
-	public static void fileReader(File selectedFile, ArrayList fields, JFileChooser
-			fileChooser) throws IOException {
+	public static ArrayList<Object> fileReader(JFileChooser fileChooser,
+			File fileToOpen, ArrayList<Object> fields) throws IOException {
+		
+		
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel Files", 
-				"xlsx");
+				".xlsx");
 		fileChooser.setFileFilter(filter);
 		
 		
 		try {
 			FileInputStream excelFile = new FileInputStream(
-					new File(selectedFile.getAbsolutePath()));
+					new File(fileToOpen.getAbsolutePath()));
+			
 			XSSFWorkbook workbook = new XSSFWorkbook(excelFile);
-			XSSFSheet dataTypeSheet = workbook.getSheetAt(1);
-			Iterator<Row> rowIterator = dataTypeSheet.iterator();
+			XSSFSheet sheet1 = workbook.getSheetAt(1);
+			Iterator<Row> rowIterator = sheet1.iterator();
 			
 			while(rowIterator.hasNext()) {
 				Row currentRow = rowIterator.next();
@@ -82,8 +87,8 @@ public class ReadTest {
 				
 			}
 			
-			createOutputFile(OUTPUT_FILE, selectedFile, fields);
-							
+			
+						
 		
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -91,50 +96,60 @@ public class ReadTest {
 			e.printStackTrace();
 		}
 		
-	
+		return fields;
 	}
 	
-	public static void createOutputFile(String OUTPUT_FILE, File excelFile, 
-			ArrayList fields) throws IOException {
-		
-		
+	public static XSSFWorkbook createOutputFile(String OUTPUT_FILE,
+			ArrayList<Object> fields)throws IOException {
 		
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet1 = workbook.createSheet("Profitability");
 		XSSFSheet sheet2 = workbook.createSheet("Utilization");
-		String[] header = {"Month", "Customer", "Project", "Hours", "Cost", 
+		Object [] header = {"Month", "Customer", "Project", "Hours", "Cost", 
 				"Invoiced" + "Profitability"};
 		
 		int rowNum = 0;
 		
+	
 		for (Object head : header) {
-			Row row = sheet1.createRow(rowNum++);
+			Row row = sheet1.createRow(rowNum);
+		
 			int colNum = 0;
 			for (Object field : fields) {
-				Cell cell= row.createCell(colNum++);
+				Cell cell = row.createCell(colNum++);
 				if (field instanceof String) {
 					cell.setCellValue((String) field);
-				} else if (field instanceof Integer) {
-					cell.setCellValue((Integer) field);
-				} else if (field instanceof Date){
+				}
+				else if (field instanceof Double) {
+					cell.setCellValue((double) field);
+				}else if (field instanceof Date) {
 					cell.setCellValue((Date) field);
 				}
 				
-				
-				
-				
 			}
 		}
-		writeFile(OUTPUT_FILE, workbook);
+		
+		
+		return workbook;
+		
+				
 		
 	}
+		
 	
-	public static XSSFWorkbook writeFile(String OUTPUT_FILE, XSSFWorkbook workbook) 
-			throws IOException {
-		FileOutputStream output = new FileOutputStream(new File(OUTPUT_FILE));
-		workbook.write(output);
-		output.close();
-		workbook.close();
+	
+	public static XSSFWorkbook writeFile(XSSFWorkbook workbook, 
+			String OUTPUT_FILE) throws IOException {
+		
+		try {
+			FileOutputStream out = new FileOutputStream(new File(OUTPUT_FILE));
+			workbook.write(out);
+			out.close();
+			workbook.close();
+		}catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		return workbook;
 		
 	}
