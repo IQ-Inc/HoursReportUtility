@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -33,8 +34,8 @@ public class ReadTest {
 	
 	
 	
-	
 	public static void main(String[] args) throws IOException {
+		
 		
 		JFileChooser fileChooser = new JFileChooser();
 		int status = fileChooser.showOpenDialog(null);
@@ -47,12 +48,10 @@ public class ReadTest {
 		e.printStackTrace();
 	}
 		
-		createOutputFile(OUTPUT_FILE, fields);
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		writeFile(workbook, OUTPUT_FILE);
+		
 	}
 	
-	public static ArrayList<Object> fileReader(JFileChooser fileChooser,
+	public static void fileReader(JFileChooser fileChooser,
 			File fileToOpen, ArrayList<Object> fields) throws IOException {
 		
 		
@@ -96,7 +95,7 @@ public class ReadTest {
 			e.printStackTrace();
 		}
 		
-		return fields;
+		
 	}
 	
 	public static XSSFWorkbook createOutputFile(String OUTPUT_FILE,

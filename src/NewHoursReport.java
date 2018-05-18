@@ -35,11 +35,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 
-public class NewHoursReport extends JPanel  {
-	 JFrame frame;
+public class NewHoursReport extends JFrame  {
+	 static JFrame frame;
 	 JLabel label;
 	 Date date;
-	 JPanel cards;
+	 static JFrame dateFrame;
 	 JButton homeBut;
 	 JButton nextBut;
 	 JButton prevBut;
@@ -47,29 +47,33 @@ public class NewHoursReport extends JPanel  {
 	 JButton exit;
 	 JPanel panelContainer;
 	 JFileChooser fileChooser;
+	 static JTextField startDate;
+	 static JTextField endDate;
+
+	 public static final String OUTPUT_FILE = "Hours_" + getCurrentTimeStamp() +
+				".xlsx";
 
 	static String[] header = {"Month", "Customer", "Project", "Hours", "Cost", 
-			"Invoiced" + "Profitability"};
+			"Invoiced", "Profitability"};
 	
-	static ArrayList<String> projects = new ArrayList<>();
-	static ArrayList<Date> dates = new ArrayList<>();
-	static ArrayList<String>billingStatus = new ArrayList<>();
-	static ArrayList<Double>duration = new ArrayList<>();
-	static ArrayList<String> names = new ArrayList<>();
-	
+	static ArrayList<Object> input = new ArrayList<>();
+	static ArrayList<Object> projects = new ArrayList<>();
+	static ArrayList<Object> dates = new ArrayList<>();
+	static ArrayList<Object> billStatus = new ArrayList<>();
+	static ArrayList<Object> names = new ArrayList<>();
+	static ArrayList<Object> duration = new ArrayList<>();
 	
 	
 		public static void main(String[] args) throws IOException {
 			NewHoursReport report = new NewHoursReport();
-			createOutputFile(projects, dates, billingStatus, duration, names);
 			
 		}
 		
-		
+		// next 4 methods set up the GUI
 		public NewHoursReport() {
-	 		super(new BorderLayout());
 	 		
-	 		this.frame = new JFrame();
+	 		
+	 		NewHoursReport.frame = new JFrame();
 	 		
 	 		JLabel label = new JLabel("Please select a file to open");
 	 		
@@ -117,20 +121,25 @@ public class NewHoursReport extends JPanel  {
 	 	}
 	 	
 	 	public static JFrame changeDatePane() {
-	 		JFrame frame = new JFrame("Change Dates");
-	 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	 		JFrame dateFrame = new JFrame("Change Dates");
+	 		dateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 		
+	 		
+	 		nextListenerClass listener3 = new nextListenerClass();
+	 		backListenerClass listener4 = new backListenerClass();
 	 		//Buttons
 	 		JButton next = createButton(40,40,"Next");
 	 		JButton back = createButton(40,40,"Back");
+	 		next.addActionListener(listener3);
+	 		back.addActionListener(listener4);
 	 		
 	 		//Create Labels
 	 		JLabel start = new JLabel("Start Date");
 	 		JLabel end = new JLabel("End Date");
 	 		
 	 		//TextFields
-	 		JTextField startDate = new JTextField("MM/DD/YYYY");
-	 		JTextField endDate = new JTextField("MM/DD/YYYY");
+	 		JTextField startDate = new JTextField();
+	 		JTextField endDate = new JTextField();
 	 		
 	 		//Create Panes and Layouts
 	 		JPanel leftPane = new JPanel();
@@ -153,21 +162,31 @@ public class NewHoursReport extends JPanel  {
 	 		
 	 		
 	 		//add everything to pane
-	 		frame.add(bottomPane, BorderLayout.PAGE_END);
-	 		frame.add(leftPane, BorderLayout.WEST);
-	 		frame.add(Box.createHorizontalGlue());
-	 		frame.add(rightPane, BorderLayout.EAST);
-	 		frame.pack();
-	 		frame.setVisible(true);
+	 		dateFrame.add(bottomPane, BorderLayout.PAGE_END);
+	 		dateFrame.add(leftPane, BorderLayout.WEST);
+	 		dateFrame.add(Box.createHorizontalGlue());
+	 		dateFrame.add(rightPane, BorderLayout.EAST);
+	 		dateFrame.pack();
+	 		dateFrame.setVisible(true);
 	 		
-	 		return frame;
+	 		return dateFrame;
+	 	}
+	 	
+	 	public static void setDate(JTextField startDate, JTextField endDate
+	 			, JFrame dateFrame, JButton next) {
+	 		 if (startDate.getText().isEmpty() && endDate.getText().isEmpty()) {
+	 			 next.setEnabled(false);
+	 		 }
+	 		 else {
+	 			 next.setEnabled(true);
+	 			 
+	 		 }
 	 	}
 	
-		public static void readFile( JFileChooser fileChooser, ArrayList projects, 
-				ArrayList dates, ArrayList status, ArrayList duration, 
-				ArrayList names) {
+		public static void readFile( JFileChooser fileChooser, ArrayList<Object> input) 
+						throws IOException {
 				
-			
+			createOutputFile();
 			
 			try {
 				
@@ -186,22 +205,18 @@ public class NewHoursReport extends JPanel  {
 						
 						while (cells.hasNext()) { 
 							XSSFCell cell = (XSSFCell) cells.next();
-							// If statements to fill proper arrays with data 
-							// to append to output arrays
-						if (cell.getColumnIndex() == 1) {
-							projects.add(cell);
-						} else if (cell.getColumnIndex() == 4) {
-							dates.add(cell);
-						} else if (cell.getColumnIndex() == 6) {
-							names.add(cell);
-						} else if (cell.getColumnIndex() == 7) {
-							status.add(cell);
-						} else if (cell.getColumnIndex() == 8) {
-							duration.add(cell);
+							input.add(cell);
+							
 						}
-					
-						}
+							
 					}
+					// trial and error for calculations later
+					LinkedHashSet hs = new LinkedHashSet(input);
+					if (hs.contains(" ,")) {
+						hs.remove(" ,");
+					}
+					
+					System.out.println(hs);
 					
 		
 			} catch (Exception e) {
@@ -209,14 +224,16 @@ public class NewHoursReport extends JPanel  {
 			}
 			
 			
+			// to switch the dates if ok
 			int n = JOptionPane.showConfirmDialog(fileChooser, 
 					"Overwrite Start and End Dates?");
-					if (n == JOptionPane.OK_OPTION) { 
+					if (n == JOptionPane.OK_OPTION) {
 					changeDatePane();
+					
 			} 
+	
 			
-			
-		}
+}
 		
 		public static void findFile() throws IOException {
 			
@@ -235,13 +252,13 @@ public class NewHoursReport extends JPanel  {
 			
 			try { //options option to read file and executes if yes
 				if(status == JFileChooser.APPROVE_OPTION) {
-					File fileToOpen = fileChooser.getSelectedFile();
+					 fileChooser.getSelectedFile();
 					
 					int n = JOptionPane.showConfirmDialog(fileChooser, "Read File?", "File Reader", 
 							JOptionPane.YES_NO_OPTION);
 				
 					if(n == JOptionPane.OK_OPTION) { 
-						readFile(fileChooser, projects, dates, billingStatus, duration, names);
+						readFile(fileChooser, input);
 						
 					}else if (n == JOptionPane.NO_OPTION) {
 						findFile();
@@ -255,16 +272,14 @@ public class NewHoursReport extends JPanel  {
 			}
 		
 			//Need to redo this 
-		public static void createOutputFile(ArrayList projects, ArrayList dates,
-					ArrayList billingStatus, ArrayList duration, ArrayList names)
-							throws IOException {
+		public static void createOutputFile() throws IOException {
 				XSSFWorkbook wb = new XSSFWorkbook();
 				CreationHelper create = wb.getCreationHelper();
 				XSSFSheet sheet1 = wb.createSheet("Profitability");
 				XSSFSheet sheet2 = wb.createSheet("Utilization");
 				
 			
-			 
+				// Creates the output file with the header needed
 				CellStyle headerCellStyle = wb.createCellStyle();
 				
 				
@@ -276,49 +291,31 @@ public class NewHoursReport extends JPanel  {
 					cell.setCellStyle(headerCellStyle);
 				}
 				
-			
-				
-			
-				
-				
 				for (int i = 0; i < header.length; i++) {
 					sheet1.autoSizeColumn(i);
 				}
-				int firstRow = sheet1.getFirstRowNum();
-				int lastRow = sheet1.getLastRowNum();
-				int firstCol = sheet1.getRow(0).getFirstCellNum();
-				int lastCol = sheet1.getRow(0).getLastCellNum();
 				
-				CellReference topLeft = new CellReference(firstRow, firstCol);
-				CellReference botRight = new CellReference(lastRow, lastCol - 1);
-				
-				AreaReference aref = new AreaReference(topLeft, botRight);
-				CellReference pos = new CellReference(firstRow + 4, lastCol + 1);
-				
-				XSSFPivotTable pivotTable = sheet1.createPivotTable(aref, pos);
-				
-				
-				pivotTable.addRowLabel(0);
-				pivotTable.addRowLabel(1);
-				
-						
-				FileOutputStream out = new FileOutputStream("Hours_" + 
+			
+					FileOutputStream out = new FileOutputStream("Hours_" + 
 						getCurrentTimeStamp() + ".xlsx");
 				
 				wb.write(out);
 				out.close();
 				
-			
+		
 					
 				
 			}
-		
+	
+		// method that returns date for save path 
 		public static String getCurrentTimeStamp() {
 			SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd HHmmss");
 			Date now = new Date();
 			String strDate = df.format(now);
 			return strDate;
 		}
+		
+		//Listener classes
 		
 		public static class browseListenerClass implements ActionListener{
 
@@ -333,9 +330,7 @@ public class NewHoursReport extends JPanel  {
 				
 			}
 
-		
-			
-		}
+	}
 		public static class cancelListenerClass implements ActionListener{
 
 			@Override
@@ -353,11 +348,26 @@ public class NewHoursReport extends JPanel  {
 			public void actionPerformed(ActionEvent arg0) {
 				//add something here 
 				
+				
 			}
 			
 		}
+		
+		public static class nextListenerClass implements ActionListener{
 
-	}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//select an option is parent dialog
+				
+				
+				
+			}
+		
+		}
+				
+}
+		
+	
 	
 	
 	
