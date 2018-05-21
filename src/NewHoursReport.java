@@ -1,11 +1,8 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.NumberFormat.Field;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -13,21 +10,12 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.poi.*;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.AreaReference;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFPivotTable;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,10 +24,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class NewHoursReport extends JFrame  {
-	 static JFrame frame;
+	  static JFrame frame;
 	 JLabel label;
 	 Date date;
-	 static JFrame dateFrame;
+	 JFrame dateFrame;
 	 JButton homeBut;
 	 JButton nextBut;
 	 JButton prevBut;
@@ -55,7 +43,11 @@ public class NewHoursReport extends JFrame  {
 
 	static String[] header = {"Month", "Customer", "Project", "Hours", "Cost", 
 			"Invoiced", "Profitability"};
+	static String[] dateHeader = {" ","Jan","Feb","Mar","Apr", "May","Jun","Jul",
+			"Aug","Sep","Oct","Nov","Dec"};
 	
+			
+			
 	static ArrayList<Object> input = new ArrayList<>();
 	static ArrayList<Object> projects = new ArrayList<>();
 	static ArrayList<Object> dates = new ArrayList<>();
@@ -67,13 +59,18 @@ public class NewHoursReport extends JFrame  {
 		public static void main(String[] args) throws IOException {
 			NewHoursReport report = new NewHoursReport();
 			
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					createAndShowFrame();
+				}
+			});
+			
 		}
 		
 		// next 4 methods set up the GUI
-		public NewHoursReport() {
+		public static JFrame createAndShowFrame() {
 	 		
-	 		
-	 		NewHoursReport.frame = new JFrame();
+	 		frame = new JFrame();
 	 		
 	 		JLabel label = new JLabel("Please select a file to open");
 	 		
@@ -95,10 +92,10 @@ public class NewHoursReport extends JFrame  {
 	 		bottomPane.add(browse);
 	 		bottomPane.add(cancel);
 	 		topPane.add(label);
-	 		createJFrame(topPane, bottomPane, 300,100);
+	 		createJFrame(topPane, bottomPane, 300,150);
 	 		frame.pack();
 	 		
-	 	
+	 	return frame;
 	 		
 	 	}
 	 	
@@ -138,8 +135,8 @@ public class NewHoursReport extends JFrame  {
 	 		JLabel end = new JLabel("End Date");
 	 		
 	 		//TextFields
-	 		JTextField startDate = new JTextField();
-	 		JTextField endDate = new JTextField();
+	 		 startDate = new JTextField("mm/dd/yyyy", 10);
+	 		 endDate = new JTextField("mm/dd/yyyy", 10);
 	 		
 	 		//Create Panes and Layouts
 	 		JPanel leftPane = new JPanel();
@@ -172,16 +169,39 @@ public class NewHoursReport extends JFrame  {
 	 		return dateFrame;
 	 	}
 	 	
-	 	public static void setDate(JTextField startDate, JTextField endDate
-	 			, JFrame dateFrame, JButton next) {
-	 		 if (startDate.getText().isEmpty() && endDate.getText().isEmpty()) {
-	 			 next.setEnabled(false);
-	 		 }
-	 		 else {
-	 			 next.setEnabled(true);
-	 			 
-	 		 }
+	 	public static List<Date> setDate(String start, String end) 
+	 			throws ParseException {
+	 		
+	 		
+	 		List<Date> datesInRange = new ArrayList<>();
+	 		
+	 		try {
+	 		start = startDate.getText();
+	 		end = endDate.getText();
+	 		Date sDate = new SimpleDateFormat("MM/dd/yyyy").parse(start);
+	 		Date eDate = new SimpleDateFormat("MM/dd/yyyy").parse(end);
+	 		
+	 		
+	 		Calendar calendar = new GregorianCalendar();
+	 		Calendar endCalendar = new GregorianCalendar();
+	 		endCalendar.setTime(eDate);
+	 		calendar.setTime(sDate);
+	 		
+	 		while(calendar.before(endCalendar)) {
+	 			Date result = calendar.getTime();
+	 			datesInRange.add(result);
+	 			calendar.add(Calendar.DATE, 1);
+	 		}
+	 } catch (ParseException e) {
+	 		// Doesn't allow the user to move on until a valid date is entered	
+		 	changeDatePane(); 
+	 			
+	 		}
+	 		
+	 		
+	 		return datesInRange;
 	 	}
+
 	
 		public static void readFile( JFileChooser fileChooser, ArrayList<Object> input) 
 						throws IOException {
@@ -210,14 +230,8 @@ public class NewHoursReport extends JFrame  {
 						}
 							
 					}
-					// trial and error for calculations later
-					LinkedHashSet hs = new LinkedHashSet(input);
-					if (hs.contains(" ,")) {
-						hs.remove(" ,");
-					}
-					
-					System.out.println(hs);
-					
+					System.out.println(input);
+					workbook.close();
 		
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(new JFrame(), "File not found.");
@@ -229,14 +243,21 @@ public class NewHoursReport extends JFrame  {
 					"Overwrite Start and End Dates?");
 					if (n == JOptionPane.OK_OPTION) {
 					changeDatePane();
+					}
 					
-			} 
+					else if (n == JOptionPane.NO_OPTION) {
+						System.out.println("Chose not to change");
+					
+					}
+					
+			 
 	
 			
 }
 		
 		public static void findFile() throws IOException {
 			
+			input = new ArrayList<Object>();
 			//Creates file chooser for browsing and selection
 			JFileChooser fileChooser = new JFileChooser(".");
 			fileChooser.setSize(400,400);
@@ -273,8 +294,10 @@ public class NewHoursReport extends JFrame  {
 		
 			//Need to redo this 
 		public static void createOutputFile() throws IOException {
+				Calendar now = Calendar.getInstance();
+				int year = now.get(Calendar.YEAR);
 				XSSFWorkbook wb = new XSSFWorkbook();
-				CreationHelper create = wb.getCreationHelper();
+				
 				XSSFSheet sheet1 = wb.createSheet("Profitability");
 				XSSFSheet sheet2 = wb.createSheet("Utilization");
 				
@@ -284,28 +307,30 @@ public class NewHoursReport extends JFrame  {
 				
 				
 				Row headerRow = sheet1.createRow(0);
+				Row dateRow = sheet2.createRow(0);
 				
+				//Populates the headers for both sheets
 				for (int i = 0; i < header.length; i++) {
 					Cell cell = headerRow.createCell(i);
 					cell.setCellValue(header[i]);
 					cell.setCellStyle(headerCellStyle);
 				}
 				
-				for (int i = 0; i < header.length; i++) {
-					sheet1.autoSizeColumn(i);
+				
+				for (int i = 1; i < dateHeader.length; i++) {
+					Cell cell = dateRow.createCell(i);
+					cell.setCellValue(dateHeader[i] + "-" + year );
+					
 				}
 				
-			
-					FileOutputStream out = new FileOutputStream("Hours_" + 
+				FileOutputStream out = new FileOutputStream("Hours_" + 
 						getCurrentTimeStamp() + ".xlsx");
 				
 				wb.write(out);
+				wb.close();
 				out.close();
 				
-		
-					
-				
-			}
+		}
 	
 		// method that returns date for save path 
 		public static String getCurrentTimeStamp() {
@@ -336,20 +361,21 @@ public class NewHoursReport extends JFrame  {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
-				
-				
-			}
+	}
 			
 		}
 
 		public static class backListenerClass implements ActionListener{
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				//add something here 
-				
-				
+			public void actionPerformed(ActionEvent e) {	
+			String command = e.getActionCommand();
+			
+			if(command.equals("Back")) {
+				changeDatePane();
 			}
+				
+	}
 			
 		}
 		
@@ -359,7 +385,12 @@ public class NewHoursReport extends JFrame  {
 			public void actionPerformed(ActionEvent e) {
 				//select an option is parent dialog
 				
-				
+				try {
+					setDate(startDate.getText(), endDate.getText());
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 			}
 		
