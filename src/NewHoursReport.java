@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -10,8 +11,10 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataConsolidateFunction;
 import org.apache.poi.ss.usermodel.Row;
@@ -46,14 +49,13 @@ public class NewHoursReport extends JFrame  {
 	static String[] dateHeader = {" ","Jan","Feb","Mar","Apr", "May","Jun","Jul",
 			"Aug","Sep","Oct","Nov","Dec"};
 	
-			
-			
-	static ArrayList<Object> input = new ArrayList<>();
-	static ArrayList<Object> projects = new ArrayList<>();
-	static ArrayList<Object> dates = new ArrayList<>();
-	static ArrayList<Object> billStatus = new ArrayList<>();
-	static ArrayList<Object> names = new ArrayList<>();
-	static ArrayList<Object> duration = new ArrayList<>();
+	private static ArrayList<Object> input = new ArrayList<>();
+	private static ArrayList<Object> projects = new ArrayList<>();
+	private static ArrayList<Object> dates = new ArrayList<>();
+	private static ArrayList<Object> billStatus = new ArrayList<>();
+	private static ArrayList<Object> names = new ArrayList<>();
+	private static ArrayList<Object> duration = new ArrayList<>();
+	private static ArrayList<Object> contractServ = new ArrayList<>();
 	
 	
 		public static void main(String[] args) throws IOException {
@@ -205,11 +207,12 @@ public class NewHoursReport extends JFrame  {
 	
 		public static void readFile( JFileChooser fileChooser, ArrayList<Object> input) 
 						throws IOException {
-				
+			
+			
 			createOutputFile();
 			
 			try {
-				
+				//get and read the file and set up workbook and sheet instances
 					File selectedFile = fileChooser.getSelectedFile();
 					FileInputStream fileInput = new FileInputStream(selectedFile);
 					XSSFWorkbook workbook = new XSSFWorkbook(fileInput);
@@ -218,19 +221,34 @@ public class NewHoursReport extends JFrame  {
 					//Iterator to scan through sheets
 					Iterator<Row> rows = sheet.rowIterator();
 					
-					while (rows.hasNext()) {
+					//Iterate through the rows
+					while (rows.hasNext() && rows != null) {
 						XSSFRow row = (XSSFRow)rows.next();
 						
 						Iterator<Cell> cells = row.cellIterator();
 						
-						while (cells.hasNext()) { 
+						// Iterate through the columns
+						while (cells.hasNext() && cells != null) { 
 							XSSFCell cell = (XSSFCell) cells.next();
-							input.add(cell);
+							if (cell.getColumnIndex() == 0) {
+								projects.add(cell);
+							}  else if (cell.getColumnIndex() == 4) {
+								dates.add(cell);
+							} else if(cell.getColumnIndex() == 6) {
+								names.add(cell);
+							} else if (cell.getColumnIndex() == 8 && 
+									cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+								duration.add(cell.getNumericCellValue());
+							}
+								
+							
 							
 						}
-							
-					}
-					System.out.println(input);
+						
+						
+							}
+											
+					System.out.println(duration);
 					workbook.close();
 		
 			} catch (Exception e) {
@@ -251,13 +269,25 @@ public class NewHoursReport extends JFrame  {
 					}
 					
 			 
-	
-			
 }
+		public static ArrayList<Object> removeDuplicate(ArrayList<Object> input) {
+			for (int i = 0; i < input.size(); i++) {
+				for (int j = i + 1; j < input.size();j++) {
+					if(input.get(i).equals(input.get(j))) {
+						input.remove(j);
+						j--;
+					}
+				}
+			}
+			
+			return input;
+		}
+			
+
 		
 		public static void findFile() throws IOException {
 			
-			input = new ArrayList<Object>();
+			
 			//Creates file chooser for browsing and selection
 			JFileChooser fileChooser = new JFileChooser(".");
 			fileChooser.setSize(400,400);
@@ -319,7 +349,12 @@ public class NewHoursReport extends JFrame  {
 				
 				for (int i = 1; i < dateHeader.length; i++) {
 					Cell cell = dateRow.createCell(i);
-					cell.setCellValue(dateHeader[i] + "-" + year );
+					cell.setCellValue(dateHeader[i] + " - " + year );
+					
+				}
+				
+				for (int i = 1; i < dateHeader.length; i++) {
+					sheet2.autoSizeColumn(i);
 					
 				}
 				
