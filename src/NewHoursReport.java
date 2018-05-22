@@ -49,24 +49,24 @@ public class NewHoursReport extends JFrame  {
 	static String[] dateHeader = {" ","Jan","Feb","Mar","Apr", "May","Jun","Jul",
 			"Aug","Sep","Oct","Nov","Dec"};
 	
-	private static ArrayList<Object> input = new ArrayList<>();
-	private static ArrayList<Object> projects = new ArrayList<>();
-	private static ArrayList<Object> dates = new ArrayList<>();
-	private static ArrayList<Object> billStatus = new ArrayList<>();
-	private static ArrayList<Object> names = new ArrayList<>();
-	private static ArrayList<Object> duration = new ArrayList<>();
-	private static ArrayList<Object> contractServ = new ArrayList<>();
+	protected static ArrayList<Object> input = new ArrayList<>();
+	protected static ArrayList<Object> projects = new ArrayList<>();
+	protected static ArrayList<Object> dates = new ArrayList<>();
+	protected static ArrayList<Object> billStatus = new ArrayList<>();
+	protected static ArrayList<Object> names = new ArrayList<>();
+	protected static ArrayList<Object> duration = new ArrayList<>();
+	protected static ArrayList<Object> contractServ = new ArrayList<>();
 	
 	
 		public static void main(String[] args) throws IOException {
-			NewHoursReport report = new NewHoursReport();
+			 
 			
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					createAndShowFrame();
 				}
 			});
-			
+			employees(names);		
 		}
 		
 		// next 4 methods set up the GUI
@@ -171,7 +171,27 @@ public class NewHoursReport extends JFrame  {
 	 		return dateFrame;
 	 	}
 	 	
-	 	public static List<Date> setDate(String start, String end) 
+	 	public static JFrame employees(ArrayList<Object> names) {
+	 		
+	 		
+	 		JPanel pane = new JPanel();
+	 		pane.setLayout(new BoxLayout(pane,BoxLayout.X_AXIS));
+	 		for (int i = 0; i < names.size();i++) {
+	 			JCheckBox box = new JCheckBox((String)names.get(i));
+	 			pane.add(box);
+	 		}
+	 		
+	 		
+	 		JFrame newFrame = new JFrame("Select Employees");
+	 		newFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	 		newFrame.add(pane);
+	 	
+	 		newFrame.setVisible(true);
+	 		
+	 		return newFrame;
+	 	}
+	 	
+	 public static List<Date> setDate(String start, String end) 
 	 			throws ParseException {
 	 		
 	 		
@@ -230,6 +250,9 @@ public class NewHoursReport extends JFrame  {
 						// Iterate through the columns
 						while (cells.hasNext() && cells != null) { 
 							XSSFCell cell = (XSSFCell) cells.next();
+							
+							//adds values from cells into arrays
+							// Will be manipulated by calculations class
 							if (cell.getColumnIndex() == 0) {
 								projects.add(cell);
 							}  else if (cell.getColumnIndex() == 4) {
@@ -246,8 +269,13 @@ public class NewHoursReport extends JFrame  {
 						}
 						
 						
+						
 							}
+					
 											
+					System.out.println(projects);
+					System.out.println(dates);
+					System.out.println(names);
 					System.out.println(duration);
 					workbook.close();
 		
@@ -430,6 +458,8 @@ public class NewHoursReport extends JFrame  {
 			}
 		
 		}
+		
+		
 				
 }
 		

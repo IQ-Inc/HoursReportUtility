@@ -4,7 +4,7 @@ public class Calculations extends NewHoursReport {
 	private double projectCost;
 	private double rate;
 	private double projectHours;
-	
+	private String employee;
 	
 	public static void main(String[] args) {
 		ArrayList<Object> test = new ArrayList<>();
@@ -19,13 +19,14 @@ public class Calculations extends NewHoursReport {
 		System.out.println(test);
 		removeDuplicate(test);
 		
-		System.out.println(test);
+		System.out.println(input);
 	}
 	
 	
 	
 	
-	public double costForProject(double rate, double hours) {
+	public double costForProject(double rate, double hours, String employee) {
+		this.employee = employee;
 		this.rate = rate;
 		this.projectHours = hours;
 		
@@ -36,8 +37,15 @@ public class Calculations extends NewHoursReport {
 		return cost;
 	}
 	
-	
 	//Getters and Setters
+	public String getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(String employee) {
+		this.employee = employee;
+	}
+
 	public double getProjectCost() {
 		return projectCost;
 	}
