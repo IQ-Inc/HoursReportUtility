@@ -66,7 +66,7 @@ public class NewHoursReport extends JFrame  {
 					createAndShowFrame();
 				}
 			});
-			employees(names);		
+				
 		}
 		
 		// next 4 methods set up the GUI
@@ -229,7 +229,7 @@ public class NewHoursReport extends JFrame  {
 						throws IOException {
 			
 			
-			createOutputFile();
+			
 			
 			try {
 				//get and read the file and set up workbook and sheet instances
@@ -253,11 +253,14 @@ public class NewHoursReport extends JFrame  {
 							
 							//adds values from cells into arrays
 							// Will be manipulated by calculations class
-							if (cell.getColumnIndex() == 0) {
+							if (cell.getColumnIndex() == 0 && 
+									cell.getCellType() != cell.CELL_TYPE_BLANK) {
 								projects.add(cell);
-							}  else if (cell.getColumnIndex() == 4) {
+							}  else if (cell.getColumnIndex() == 4 && 
+									cell.getCellType() != cell.CELL_TYPE_BLANK) {
 								dates.add(cell);
-							} else if(cell.getColumnIndex() == 6) {
+							} else if(cell.getColumnIndex() == 6 && 
+									cell.getCellType() != cell.CELL_TYPE_BLANK) {
 								names.add(cell);
 							} else if (cell.getColumnIndex() == 8 && 
 									cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
@@ -267,18 +270,10 @@ public class NewHoursReport extends JFrame  {
 							
 							
 						}
-						
-						
-						
-							}
+				}
 					
-											
-					System.out.println(projects);
-					System.out.println(dates);
-					System.out.println(names);
-					System.out.println(duration);
-					workbook.close();
-		
+					
+					
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(new JFrame(), "File not found.");
 			}
@@ -295,9 +290,10 @@ public class NewHoursReport extends JFrame  {
 						System.out.println("Chose not to change");
 					
 					}
-					
-			 
-}
+					createOutputFile(projects);
+				}
+		
+		
 		public static ArrayList<Object> removeDuplicate(ArrayList<Object> input) {
 			for (int i = 0; i < input.size(); i++) {
 				for (int j = i + 1; j < input.size();j++) {
@@ -310,6 +306,9 @@ public class NewHoursReport extends JFrame  {
 			
 			return input;
 		}
+		
+		//Test to see what the excel file will look like
+		
 			
 
 		
@@ -350,14 +349,16 @@ public class NewHoursReport extends JFrame  {
 			}
 			}
 		
-			//Need to redo this 
-		public static void createOutputFile() throws IOException {
+			// Creates the file and Workbook to which to write 
+		public static void createOutputFile(List<Object> project) throws IOException {
+				
 				Calendar now = Calendar.getInstance();
 				int year = now.get(Calendar.YEAR);
 				XSSFWorkbook wb = new XSSFWorkbook();
 				
 				XSSFSheet sheet1 = wb.createSheet("Profitability");
 				XSSFSheet sheet2 = wb.createSheet("Utilization");
+				XSSFSheet sheet3 = wb.createSheet("Original File");
 				
 			
 				// Creates the output file with the header needed
@@ -367,19 +368,33 @@ public class NewHoursReport extends JFrame  {
 				Row headerRow = sheet1.createRow(0);
 				Row dateRow = sheet2.createRow(0);
 				
+				
+					
+				
+				
 				//Populates the headers for both sheets
 				for (int i = 0; i < header.length; i++) {
 					Cell cell = headerRow.createCell(i);
 					cell.setCellValue(header[i]);
 					cell.setCellStyle(headerCellStyle);
+					
 				}
 				
 				
-				for (int i = 1; i < dateHeader.length; i++) {
+					for (int i = 1; i < dateHeader.length; i++) {
 					Cell cell = dateRow.createCell(i);
 					cell.setCellValue(dateHeader[i] + " - " + year );
 					
 				}
+					
+					for (int i = 0; i < project.size(); i++) {
+						Cell cell = headerRow.createCell(3);
+						cell.setCellType(CellType.STRING);
+						cell.setCellValue((String) project.get(i));
+						System.out.println(cell.getCellTypeEnum());
+					}
+				
+				
 				
 				for (int i = 1; i < dateHeader.length; i++) {
 					sheet2.autoSizeColumn(i);
@@ -402,6 +417,8 @@ public class NewHoursReport extends JFrame  {
 			String strDate = df.format(now);
 			return strDate;
 		}
+		
+	
 		
 		//Listener classes
 		
