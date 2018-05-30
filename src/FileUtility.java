@@ -9,15 +9,15 @@ import org.apache.poi.xssf.usermodel.*;
 public class FileUtility extends HoursReport {
 
 	static JFileChooser fileChooser;
-	static ArrayList<String> projects = new ArrayList<>();
-	static ArrayList<Date> dates = new ArrayList<>();
-	static ArrayList<String> names = new ArrayList<>();
-	static ArrayList<Double> duration = new ArrayList<>();
+	static ArrayList<Object> projects = new ArrayList<>();
+	static ArrayList<Object> dates = new ArrayList<>();
+	static ArrayList<Object> names = new ArrayList<>();
+	static ArrayList<Object> duration = new ArrayList<>();
 
-	public static void findFile() {
+	public static void findFile() throws IOException {
 		fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(
-				System.getProperty("user.home") + System.getProperty("file.separator")));
+		fileChooser
+				.setCurrentDirectory(new File(System.getProperty("user.home") + System.getProperty("file.separator")));
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel File", "xlsx");
 		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		// filter that will only show Excel files
@@ -28,23 +28,17 @@ public class FileUtility extends HoursReport {
 		try { // options option to read file and executes if yes
 			if (status == JFileChooser.APPROVE_OPTION) {
 				fileChooser.getSelectedFile();
-
-				int n = JOptionPane.showConfirmDialog(fileChooser, "Read File?", "File Reader",
-						JOptionPane.YES_NO_OPTION);
-				if (n == JOptionPane.OK_OPTION) {
-					readFile(fileChooser);
-				} else if (n == JOptionPane.NO_OPTION) {
-					findFile();
-				}
+				mImport.setEnabled(true);
+				
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+				e.printStackTrace();
 		}
-	}
+	}			
 
-	public static void readFile(JFileChooser fileChooser) throws IOException {
-
-		File selectedFile = fileChooser.getSelectedFile();
+	public static void readFile(JFileChooser fileChooser) throws Exception {
+		File selectedFile;
+		selectedFile = fileChooser.getSelectedFile();
 		FileInputStream fInput = new FileInputStream(selectedFile);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
@@ -55,10 +49,10 @@ public class FileUtility extends HoursReport {
 			Iterator<Cell> cellIt = row.cellIterator();
 
 			while (cellIt.hasNext()) {
-				XSSFCell cell = (XSSFCell) cellIt.next();
+				Cell cell = cellIt.next();
 				if (cell.getColumnIndex() == 0 && cell.getCellType() != cell.CELL_TYPE_BLANK) {
 					projects.add(cell);
-				} else if (cell.getColumnIndex() == 4 && cell.getCellType() != cell.CELL_TYPE_BLANK) { /
+				} else if (cell.getColumnIndex() == 4 && cell.getCellType() != cell.CELL_TYPE_BLANK) { 
 					dates.add(cell);
 				} else if (cell.getColumnIndex() == 6 && cell.getCellType() != cell.CELL_TYPE_BLANK) {
 					names.add(cell);
@@ -67,6 +61,7 @@ public class FileUtility extends HoursReport {
 				}
 			}
 		}
+		System.out.println(dates); //test method is reading the input file
 
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
@@ -74,12 +69,13 @@ public class FileUtility extends HoursReport {
 			report.datePaneGUI();
 		} else if (n == JOptionPane.NO_OPTION) {
 			// add something here
-			System.out.println("Chose not to change.");
+			findFile();
 		}
 
 		ExcelWriter.outputFile(projects, dates, names, duration);
 		wb.close();
 	}
+
 
 	public static String getTimeStamp() {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd HHmmss");
@@ -88,3 +84,4 @@ public class FileUtility extends HoursReport {
 		return strDate;
 	}
 }
+
