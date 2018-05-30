@@ -1,10 +1,10 @@
 import javax.swing.JTextField;
 
-public class Test extends ReDoReport {
+public class Test extends HoursReport {
 
 	public static void main(String[] args) {
-		ReDoReport report = new ReDoReport();
+		HoursReport report = new HoursReport();
 		report.createGUI();
-}
-	
+	}
+
 }

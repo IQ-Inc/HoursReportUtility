@@ -3,25 +3,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import javax.swing.JFileChooser;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class ExcelWriter extends ReDoReport {
+public class ExcelWriter extends HoursReport {
 	static JFileChooser fileChooser;
-	 public static final String OUTPUT_FILE = "Hours_" + FileUtility.getTimeStamp() +
-				".xlsx";
-	
-	 public static void outputFile(List<String> projects, List<Date> dates,
-			List<String> names, List<Double> duration) throws IOException{
-		String[] header = {"Month", "Customer", "Project", "Hours", "Cost", 
-				"Invoiced", "Profitability"};
-		String[] dateHeader = {" ","Jan","Feb","Mar","Apr", "May","Jun","Jul",
-				"Aug","Sep","Oct","Nov","Dec"};
+	public static final String OUTPUT_FILE = "Hours_" + FileUtility.getTimeStamp() + ".xlsx";
+
+	public static void outputFile(List<String> projects, List<Date> dates, List<String> names, List<Double> duration)
+			throws IOException {
+		String[] header = { "Month", "Customer", "Project", "Hours", "Cost", "Invoiced", "Profitability" };
+		String[] dateHeader = { " ", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
+				"Dec" };
 		Calendar now = Calendar.getInstance();
 		int year = now.get(Calendar.YEAR);
 		XSSFWorkbook wb = new XSSFWorkbook();
@@ -33,7 +27,7 @@ public class ExcelWriter extends ReDoReport {
 		Row client = sheet0.createRow(1);
 		Row uHeadRow = sheet1.createRow(0);
 		Row initHeadRow = sheet2.createRow(0);
-		
+
 		for (int i = 0; i < header.length; i++) {
 			Cell cell = pHeadRow.createCell(i);
 			cell.setCellValue(header[i]);
@@ -50,20 +44,17 @@ public class ExcelWriter extends ReDoReport {
 			cell.setCellValue(projects.get(row));
 			cell.setCellStyle(headCellStyle);
 		}
-		
 
 		try {
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 			wb.write(out);
 			wb.close();
-		} catch(FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-	}
-	
-	}
-	
 
+	}
+
+}
