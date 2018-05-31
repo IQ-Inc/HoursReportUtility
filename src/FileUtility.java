@@ -9,10 +9,10 @@ import org.apache.poi.xssf.usermodel.*;
 public class FileUtility extends HoursReport {
 
 	static JFileChooser fileChooser;
-	static ArrayList<Object> projects = new ArrayList<>();
-	static ArrayList<Object> dates = new ArrayList<>();
-	static ArrayList<Object> names = new ArrayList<>();
-	static ArrayList<Object> duration = new ArrayList<>();
+	static ArrayList<Cell> projects = new ArrayList<>();
+	static ArrayList<Cell> dates = new ArrayList<>();
+	static ArrayList<Cell> names = new ArrayList<>();
+	static ArrayList<Cell> duration = new ArrayList<>();
 
 	public static void findFile() throws IOException {
 		fileChooser = new JFileChooser();
@@ -50,19 +50,19 @@ public class FileUtility extends HoursReport {
 
 			while (cellIt.hasNext()) {
 				Cell cell = cellIt.next();
-				if (cell.getColumnIndex() == 0 && cell.getCellType() != cell.CELL_TYPE_BLANK) {
+				if (cell.getColumnIndex() == 0) {
 					projects.add(cell);
-				} else if (cell.getColumnIndex() == 4 && cell.getCellType() != cell.CELL_TYPE_BLANK) { 
+				} else if (cell.getColumnIndex() == 4) { 
 					dates.add(cell);
-				} else if (cell.getColumnIndex() == 6 && cell.getCellType() != cell.CELL_TYPE_BLANK) {
+				} else if (cell.getColumnIndex() == 6) {
 					names.add(cell);
-				} else if (cell.getColumnIndex() == 8 && cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+				} else if (cell.getColumnIndex() == 8) {
 					duration.add(cell);
 				}
 			}
 		}
-		System.out.println(dates); //test method is reading the input file
-
+		System.out.println(dates.size() + " Dates " + duration.size() + " Time " +
+		names.size() + " Employees " + projects.size() + " Clients ");
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
 			HoursReport report = new HoursReport();

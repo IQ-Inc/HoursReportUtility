@@ -115,8 +115,8 @@ public class HoursReport extends Frame implements ActionListener {
 			} else if (e.getActionCommand() == "Cancel") {
 					System.exit(0);
 		} else if (e.getActionCommand() == "Next") {
-					Object sDate = FileUtility.dates.get(1);
-					Object eDate = FileUtility.dates.get(FileUtility.dates.size() - 1);
+					Date sDate = (Date) FileUtility.dates.get(1);
+					Date eDate = (Date) FileUtility.dates.get(FileUtility.dates.size() - 1);
 					mImport.setEnabled(true);
 					System.out.println(sDate + " and " + eDate);
 		} else if (e.getActionCommand() == "Back") {
