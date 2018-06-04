@@ -13,13 +13,12 @@ public class FileUtility extends HoursReport {
 	static ArrayList<Cell> dates = new ArrayList<>();
 	static ArrayList<Cell> names = new ArrayList<>();
 	static ArrayList<Cell> duration = new ArrayList<>();
-
+	private static File lastPath;
 	public static void findFile() throws IOException {
 		fileChooser = new JFileChooser();
 		fileChooser
 				.setCurrentDirectory(new File(System.getProperty("user.home") + System.getProperty("file.separator")));
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel File", "xlsx");
-		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 		// filter that will only show Excel files
 		fileChooser.setFileFilter(filter);
 		fileChooser.setDialogTitle("Select Input File");
@@ -27,8 +26,13 @@ public class FileUtility extends HoursReport {
 		int status = fileChooser.showDialog(fileChooser, "Open");
 		try { // options option to read file and executes if yes
 			if (status == JFileChooser.APPROVE_OPTION) {
-				fileChooser.getSelectedFile();
+				File file = fileChooser.getSelectedFile();
 				mImport.setEnabled(true);
+				lastPath = file.getParentFile();
+				if (lastPath != null) {
+					fileChooser.setCurrentDirectory(lastPath);
+				}
+				
 				
 			}
 		} catch (Exception e) {
@@ -50,26 +54,29 @@ public class FileUtility extends HoursReport {
 
 			while (cellIt.hasNext()) {
 				Cell cell = cellIt.next();
-				if (cell.getColumnIndex() == 0) {
+				if ((cell.getColumnIndex() == 0) && (cell.getCellType() != Cell.CELL_TYPE_BLANK)) {
 					projects.add(cell);
-				} else if (cell.getColumnIndex() == 4) { 
+				} else if ((cell.getColumnIndex() == 4) && (cell.getCellType() != Cell.CELL_TYPE_BLANK)) { 
 					dates.add(cell);
-				} else if (cell.getColumnIndex() == 6) {
+				} else if ((cell.getColumnIndex() == 6)&&(cell.getCellType() != Cell.CELL_TYPE_BLANK)) {
 					names.add(cell);
-				} else if (cell.getColumnIndex() == 8) {
+				} else if ((cell.getColumnIndex() == 8)&& (cell.getCellType() != Cell.CELL_TYPE_BLANK) 
+						&& (cell.getCellType() != Cell.CELL_TYPE_FORMULA)) {
 					duration.add(cell);
 				}
 			}
 		}
 		System.out.println(dates.size() + " Dates " + duration.size() + " Time " +
 		names.size() + " Employees " + projects.size() + " Clients ");
+		
+		
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
 			HoursReport report = new HoursReport();
 			report.datePaneGUI();
 		} else if (n == JOptionPane.NO_OPTION) {
 			// add something here
-			findFile();
+			mImport.setEnabled(false);
 		}
 
 		ExcelWriter.outputFile(projects, dates, names, duration);

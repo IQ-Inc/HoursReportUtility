@@ -1,13 +1,13 @@
-import java.awt.Component;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import javax.swing.JFileChooser;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
+
 import org.apache.poi.xssf.usermodel.*;
 
+@SuppressWarnings("serial")
 public class ExcelWriter extends HoursReport {
 	static JFileChooser fileChooser;
 	public static final String OUTPUT_FILE = "Hours_" + FileUtility.getTimeStamp() + ".xlsx";
@@ -31,16 +31,33 @@ public class ExcelWriter extends HoursReport {
 			Cell cell = profitHeadRow.createCell(i);
 			cell.setCellValue(header[i]);
 			cell.setCellStyle(headCellStyle);
+			sheet0.setDefaultColumnWidth(25);
 		}
 		for (int i = 1; i < dateHeader.length; i++) {
 			Cell cell = utilHeadRow.createCell(i);
 			cell.setCellValue(dateHeader[i] + "-" + year);
 			cell.setCellStyle(headCellStyle);
 		}
-		for (int col = 1; col < header.length; col++) {
-			sheet0.setDefaultColumnWidth(15);
+		for (int i = 1; i < duration.size(); i++) {
+			Row row = sheet0.createRow(i);
+			Cell timeCell = row.createCell(3);
+			String time = formatter.formatCellValue(duration.get(i));
+			timeCell.setCellValue(time);
+			Cell empCell = row.createCell(1);
+			String employee = formatter.formatCellValue(names.get(i));
+			empCell.setCellValue(employee);
+			Cell dateCell = row.createCell(0);
+			if (i < dates.size()) {
+			String date = formatter.formatCellValue(dates.get(i));
+			dateCell.setCellValue(date);
 		}
-
+			Cell projCell = row.createCell(2);
+			if (i < projects.size()) {
+				String project = formatter.formatCellValue(projects.get(i));
+				projCell.setCellValue(project);
+				sheet0.autoSizeColumn(2);
+		} 
+		}
 		try {
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 			wb.write(out);

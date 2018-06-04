@@ -1,7 +1,5 @@
 import java.awt.BorderLayout;
 import java.awt.event.*;
-import java.io.IOException;
-import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
 
@@ -11,6 +9,7 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import java.util.*;
 import java.io.*;
 
+@SuppressWarnings("serial")
 public class HoursReport extends Frame implements ActionListener {
 	JPanel mPane0, mPane1, mDatePane0, mDatePane1, mDatePane2;
 	JTextField  mStartField, mEndField;
