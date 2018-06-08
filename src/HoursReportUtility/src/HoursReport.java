@@ -2,11 +2,8 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
-
-import java.util.*;
 import java.io.*;
 
 @SuppressWarnings("serial")
@@ -114,8 +111,8 @@ public class HoursReport extends Frame implements ActionListener {
 			} else if (e.getActionCommand() == "Cancel") {
 					System.exit(0);
 		} else if (e.getActionCommand() == "Next") {
-					Date sDate = (Date) FileUtility.dates.get(1);
-					Date eDate = (Date) FileUtility.dates.get(FileUtility.dates.size() - 1);
+					Cell sDate = FileUtility.dates.get(1);
+					Cell eDate = FileUtility.dates.get(FileUtility.dates.size() - 1);
 					mImport.setEnabled(true);
 					System.out.println(sDate + " and " + eDate);
 		} else if (e.getActionCommand() == "Back") {
