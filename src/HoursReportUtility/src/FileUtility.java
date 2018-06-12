@@ -5,6 +5,8 @@ import java.util.*;
 import java.util.prefs.Preferences;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow.CellIterator;
 import org.apache.poi.xssf.usermodel.*;
@@ -19,12 +21,10 @@ public class FileUtility extends HoursReport {
 	static ArrayList<Cell> status = new ArrayList<>();
 
 	public static void findFile() throws IOException {
-		fileChooser = new JFileChooser();
-		fileChooser
-				.setCurrentDirectory(new File(System.getProperty("user.home") + System.getProperty("file.separator")));
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel File", "xlsx");
+		fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
+		javax.swing.filechooser.FileFilter xlsxFilter = new FileTypeFilter(".xlsx", "Microsoft Excel Documents");
+		fileChooser.addChoosableFileFilter(xlsxFilter);
 		// filter that will only show Excel files
-		fileChooser.setFileFilter(filter);
 		fileChooser.setDialogTitle("Select Input File");
 		int status = fileChooser.showDialog(fileChooser, "Open");
 		try { // options option to read file and executes if yes
@@ -32,7 +32,6 @@ public class FileUtility extends HoursReport {
 				File file = fileChooser.getSelectedFile();
 				fileChooser.setCurrentDirectory(file);
 				mImport.setEnabled(true);
-
 			}
 
 		} catch (Exception e) {
@@ -40,7 +39,6 @@ public class FileUtility extends HoursReport {
 		}
 	}
 
-	
 	public static void readFile(JFileChooser fileChooser) throws Exception {
 		File selectedFile;
 		selectedFile = fileChooser.getSelectedFile();
@@ -48,7 +46,6 @@ public class FileUtility extends HoursReport {
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
 		Iterator<Row> rowIt = sheet0.rowIterator();
-		DataFormatter formatter = new DataFormatter();
 		while (rowIt.hasNext()) {
 			XSSFRow row = (XSSFRow) rowIt.next();
 			Iterator<Cell> cellIt = row.cellIterator();
@@ -68,32 +65,41 @@ public class FileUtility extends HoursReport {
 				}
 			}
 		}
+
 		// Fills in the blanks in the Array for a pivot table
-		Iterator<Cell> arrayIt = projects.iterator();
-		int index = 0;
-		while (arrayIt.hasNext()) {
-			Cell cell = arrayIt.next();
-			if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-				String project = formatter.formatCellValue(projects.get(index));
-				cell.setCellValue(project);
-				index++;
-			}
-			
-			
-		}
-		System.out.println(projects + " " + projects.size());
+		FileUtility utility = new FileUtility();
+		utility.fillArray(dates);
+		utility.fillArray(duration);
+		utility.fillArray(names);
+		utility.fillArray(projects);
+		utility.fillArray(status);
 
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
 			HoursReport report = new HoursReport();
 			report.datePaneGUI();
 		} else if (n == JOptionPane.NO_OPTION) {
-			// add something here
 			mImport.setEnabled(false);
 		}
 
 		ExcelWriter.outputFile(projects, dates, names, duration, status);
 		wb.close();
+	}
+
+	public ArrayList<Cell> fillArray(ArrayList<Cell> list) {
+		DataFormatter formatter = new DataFormatter();
+		Iterator<Cell> cellIT = list.iterator();
+		int index = 0;
+		while (cellIT.hasNext()) {
+			Cell cell = cellIT.next();
+			if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+				String format = formatter.formatCellValue(list.get(index));
+				cell.setCellValue(format);
+				index++;
+			}
+
+		}
+		return list;
 	}
 
 	public static String getTimeStamp() {

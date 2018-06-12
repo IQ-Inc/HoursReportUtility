@@ -111,8 +111,7 @@ public class HoursReport extends Frame implements ActionListener {
 			} else if (e.getActionCommand() == "Cancel") {
 					System.exit(0);
 		} else if (e.getActionCommand() == "Next") {
-					Cell sDate = FileUtility.dates.get(1);
-					Cell eDate = FileUtility.dates.get(FileUtility.dates.size() - 1);
+					
 					mImport.setEnabled(true);
 					System.out.println(sDate + " and " + eDate);
 		} else if (e.getActionCommand() == "Back") {
