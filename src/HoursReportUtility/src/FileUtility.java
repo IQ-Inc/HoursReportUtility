@@ -42,6 +42,7 @@ public class FileUtility extends HoursReport {
 	public static void readFile(JFileChooser fileChooser) throws Exception {
 		File selectedFile;
 		selectedFile = fileChooser.getSelectedFile();
+		fileChooser.setCurrentDirectory(selectedFile);
 		FileInputStream fInput = new FileInputStream(selectedFile);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
@@ -65,6 +66,11 @@ public class FileUtility extends HoursReport {
 				}
 			}
 		}
+		projects.remove(0);
+		dates.remove(0);
+		names.remove(0);
+		duration.remove(0);
+		status.remove(0);
 
 		// Fills in the blanks in the Array for a pivot table
 		FileUtility utility = new FileUtility();
@@ -99,6 +105,7 @@ public class FileUtility extends HoursReport {
 			}
 
 		}
+		System.out.println(index);
 		return list;
 	}
 

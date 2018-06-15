@@ -5,6 +5,8 @@ import javax.swing.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @SuppressWarnings("serial")
 public class HoursReport extends Frame implements ActionListener {
@@ -59,19 +61,18 @@ public class HoursReport extends Frame implements ActionListener {
 		return button;
 	}
 
-	public void datePaneGUI() {
-		DataFormatter formatter = new DataFormatter();
-		String sDate = formatter.formatCellValue((Cell) FileUtility.dates.get(1));
-		String eDate = formatter.formatCellValue(
-				(Cell) FileUtility.dates.get(FileUtility.dates.size()-1));
+	public void datePaneGUI() throws Exception {
+		GetDates date = new GetDates();
+		Date sDate = date.getFirstDay(new Date());
+		Date eDate = date.getLastDay(new Date());
 		mStartDate = new JLabel("Start Date");
 		mEndDate = new JLabel("End Date");
 		mDatePane0 = new JPanel(new BorderLayout());
 		mDatePane0.add(mStartDate, BorderLayout.WEST);
 		mDatePane0.add(mEndDate, BorderLayout.EAST);
 		mDatePane1 = new JPanel(new FlowLayout());
-		mStartField = new JTextField(sDate, 12);
-		mEndField = new JTextField(eDate, 12);
+		mStartField = new JTextField(date.convertDateToString(sDate), 12);
+		mEndField = new JTextField(date.convertDateToString(eDate), 12);
 		mDatePane1.add(mStartField);
 		mDatePane1.add(mEndField);
 		mDatePane2 = new JPanel(new FlowLayout());
@@ -107,13 +108,14 @@ public class HoursReport extends Frame implements ActionListener {
 					FileUtility.readFile(FileUtility.fileChooser);
 				} catch (Exception e1) {
 					e1.printStackTrace();
+					
 				}
 			} else if (e.getActionCommand() == "Cancel") {
 					System.exit(0);
 		} else if (e.getActionCommand() == "Next") {
 					
 					mImport.setEnabled(true);
-					System.out.println(sDate + " and " + eDate);
+					System.out.println(mStartField.getText() + " " + mEndField.getText());
 		} else if (e.getActionCommand() == "Back") {
 					mDateFrame.setVisible(false);
 					FileUtility.fileChooser.setVisible(false);

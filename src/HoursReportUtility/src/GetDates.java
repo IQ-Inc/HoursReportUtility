@@ -3,21 +3,31 @@ import java.util.*;
 
 public class GetDates {
 	
-	public String getFirstDay(Date d) throws Exception {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(d);
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		Date date = calendar.getTime();
-		SimpleDateFormat sdf1 = new SimpleDateFormat("MM/dd/yyyy");
-		return sdf1.format(date);
+	public Date getFirstDay(Date date) throws Exception {
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(date);
+	calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+	return calendar.getTime();
+	
 	}
 	
-	public String getLastDay(Date d) throws Exception {
+	public Date getLastDay(Date date) throws Exception {
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(d);
+		calendar.setTime(date);
 		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-		Date date = calendar.getTime();
-		SimpleDateFormat sdf1 = new SimpleDateFormat("MM/dd/yyyy");
-		return sdf1.format(date);
+		return calendar.getTime();
 	}
+	
+	public String convertDateToString(Date inDate) {
+		String dateString = null;
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		try {
+			dateString = format.format(inDate);
+		} catch (Exception e) {
+			System.out.println("Oooopppssss");
+		}
+		return dateString;
+	}
+	
+	
 }

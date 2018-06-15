@@ -59,9 +59,8 @@ public class ExcelWriter extends HoursReport {
 			Cell projCell = row.createCell(2);
 			String project = formatter.formatCellValue(projects.get(i));
 			projCell.setCellValue(project);
-			//sheet0.autoSizeColumn(2);
 		}
-		System.out.println("Loop end");
+		sheet0.autoSizeColumn(2);
 		try { // Writer to the file
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 			wb.write(out);
