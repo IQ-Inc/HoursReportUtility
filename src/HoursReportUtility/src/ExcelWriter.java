@@ -1,3 +1,5 @@
+import java.awt.Desktop;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -70,6 +72,9 @@ public class ExcelWriter extends HoursReport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Desktop dt = Desktop.getDesktop();
+		File file = new File(OUTPUT_FILE);
+		dt.open(file);	
 
 	}
 

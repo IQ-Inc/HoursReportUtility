@@ -113,7 +113,6 @@ public class HoursReport extends Frame implements ActionListener {
 			} else if (e.getActionCommand() == "Cancel") {
 					System.exit(0);
 		} else if (e.getActionCommand() == "Next") {
-					
 					mImport.setEnabled(true);
 					System.out.println(mStartField.getText() + " " + mEndField.getText());
 		} else if (e.getActionCommand() == "Back") {

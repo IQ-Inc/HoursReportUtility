@@ -19,6 +19,7 @@ public class FileUtility extends HoursReport {
 	static ArrayList<Cell> names = new ArrayList<>();
 	static ArrayList<Cell> duration = new ArrayList<>();
 	static ArrayList<Cell> status = new ArrayList<>();
+	static File lastPath;
 
 	public static void findFile() throws IOException {
 		fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
@@ -42,7 +43,10 @@ public class FileUtility extends HoursReport {
 	public static void readFile(JFileChooser fileChooser) throws Exception {
 		File selectedFile;
 		selectedFile = fileChooser.getSelectedFile();
+		lastPath = selectedFile.getParentFile();
+		if (lastPath != null) {
 		fileChooser.setCurrentDirectory(selectedFile);
+		}
 		FileInputStream fInput = new FileInputStream(selectedFile);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
@@ -105,7 +109,7 @@ public class FileUtility extends HoursReport {
 			}
 
 		}
-		System.out.println(index);
+		
 		return list;
 	}
 
