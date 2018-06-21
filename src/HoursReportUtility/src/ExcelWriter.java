@@ -1,10 +1,13 @@
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import javax.swing.JFileChooser;
+
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
 
 import org.apache.poi.xssf.usermodel.*;
@@ -16,7 +19,7 @@ public class ExcelWriter extends HoursReport {
 
 	public static void outputFile(List<Cell> projects, List<Cell> dates, List<Cell> names, List<Cell> duration,
 			List<Cell> status) throws IOException {
-		String[] header = { "Month", "Employee", "Project", "Hours", "Billing Status", "Cost", "Invoiced",
+		String[] header = { "Project", "Employee", "Date", "Hours", "Billing Status", "Cost", "Invoiced",
 				"Profitability" };
 		String[] dateHeader = { " ", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
 				"Dec" };
@@ -41,7 +44,7 @@ public class ExcelWriter extends HoursReport {
 			cell.setCellValue(dateHeader[i] + "-" + year);
 			cell.setCellStyle(headCellStyle);
 		}
-		//this loop needs fixed
+		
 		
 		//fills the sheets with the data read from Excel File
 		for (int i = 1; i < projects.size(); i++) {
@@ -49,20 +52,24 @@ public class ExcelWriter extends HoursReport {
 			Cell statusCell = row.createCell(4);
 			String billing = formatter.formatCellValue(status.get(i));
 			statusCell.setCellValue(billing);
+			if (statusCell.equals(Cell.CELL_TYPE_BLANK)){
+				status.remove(i);
+			}
 			Cell timeCell = row.createCell(3);
 			String time = formatter.formatCellValue(duration.get(i));
 			timeCell.setCellValue(time);
 			Cell empCell = row.createCell(1);
 			String employee = formatter.formatCellValue(names.get(i));
 			empCell.setCellValue(employee);
-			Cell dateCell = row.createCell(0);
+			Cell dateCell = row.createCell(2);
 			String date = formatter.formatCellValue(dates.get(i));
 			dateCell.setCellValue(date);
-			Cell projCell = row.createCell(2);
+			Cell projCell = row.createCell(0);
 			String project = formatter.formatCellValue(projects.get(i));
 			projCell.setCellValue(project);
+			
 		}
-		sheet0.autoSizeColumn(2);
+		sheet0.autoSizeColumn(0);
 		try { // Writer to the file
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 			wb.write(out);
@@ -72,10 +79,14 @@ public class ExcelWriter extends HoursReport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
+		
 		Desktop dt = Desktop.getDesktop();
 		File file = new File(OUTPUT_FILE);
 		dt.open(file);	
-
+		
 	}
-
 }
+
+

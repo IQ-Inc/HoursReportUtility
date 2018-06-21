@@ -43,10 +43,6 @@ public class FileUtility extends HoursReport {
 	public static void readFile(JFileChooser fileChooser) throws Exception {
 		File selectedFile;
 		selectedFile = fileChooser.getSelectedFile();
-		lastPath = selectedFile.getParentFile();
-		if (lastPath != null) {
-		fileChooser.setCurrentDirectory(selectedFile);
-		}
 		FileInputStream fInput = new FileInputStream(selectedFile);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
@@ -65,6 +61,7 @@ public class FileUtility extends HoursReport {
 					names.add(cell);
 				} else if ((cell.getColumnIndex() == 8)) {
 					duration.add(cell);
+					
 				} else if ((cell.getColumnIndex() == 7)) {
 					status.add(cell);
 				}
@@ -77,12 +74,7 @@ public class FileUtility extends HoursReport {
 		status.remove(0);
 
 		// Fills in the blanks in the Array for a pivot table
-		FileUtility utility = new FileUtility();
-		utility.fillArray(dates);
-		utility.fillArray(duration);
-		utility.fillArray(names);
-		utility.fillArray(projects);
-		utility.fillArray(status);
+	
 
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
@@ -107,6 +99,7 @@ public class FileUtility extends HoursReport {
 				cell.setCellValue(format);
 				index++;
 			}
+			
 
 		}
 		
