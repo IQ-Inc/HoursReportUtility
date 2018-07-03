@@ -38,21 +38,20 @@ public class ExcelWriter extends HoursReport {
 			cell.setCellValue(header[i]);
 			cell.setCellStyle(headCellStyle);
 			sheet0.setDefaultColumnWidth(25);
-		}// creates the date header
+		} // creates the date header
 		for (int i = 1; i < dateHeader.length; i++) {
 			Cell cell = utilHeadRow.createCell(i);
 			cell.setCellValue(dateHeader[i] + "-" + year);
 			cell.setCellStyle(headCellStyle);
 		}
-		
-		
-		//fills the sheets with the data read from Excel File
+
+		// fills the sheets with the data read from Excel File
 		for (int i = 1; i < projects.size(); i++) {
 			Row row = sheet0.createRow(i);
 			Cell statusCell = row.createCell(4);
 			String billing = formatter.formatCellValue(status.get(i));
 			statusCell.setCellValue(billing);
-			if (statusCell.equals(Cell.CELL_TYPE_BLANK)){
+			if (statusCell.equals(Cell.CELL_TYPE_BLANK)) {
 				status.remove(i);
 			}
 			Cell timeCell = row.createCell(3);
@@ -67,7 +66,7 @@ public class ExcelWriter extends HoursReport {
 			Cell projCell = row.createCell(0);
 			String project = formatter.formatCellValue(projects.get(i));
 			projCell.setCellValue(project);
-			
+
 		}
 		sheet0.autoSizeColumn(0);
 		try { // Writer to the file
@@ -80,13 +79,9 @@ public class ExcelWriter extends HoursReport {
 			e.printStackTrace();
 		}
 		
-		
-		
 		Desktop dt = Desktop.getDesktop();
 		File file = new File(OUTPUT_FILE);
-		dt.open(file);	
+		dt.open(file);
 		
 	}
 }
-
-

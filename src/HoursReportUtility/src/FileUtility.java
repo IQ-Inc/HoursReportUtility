@@ -61,20 +61,21 @@ public class FileUtility extends HoursReport {
 					names.add(cell);
 				} else if ((cell.getColumnIndex() == 8)) {
 					duration.add(cell);
-					
+
 				} else if ((cell.getColumnIndex() == 7)) {
 					status.add(cell);
 				}
 			}
 		}
-		projects.remove(0);
+
 		dates.remove(0);
+		projects.remove(0);
 		names.remove(0);
 		duration.remove(0);
 		status.remove(0);
-
-		// Fills in the blanks in the Array for a pivot table
-	
+		FileUtility utility = new FileUtility();
+		utility.fillArray(projects);
+		System.out.println(projects);
 
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
@@ -87,22 +88,23 @@ public class FileUtility extends HoursReport {
 		ExcelWriter.outputFile(projects, dates, names, duration, status);
 		wb.close();
 	}
+	// Fills in the blanks in the Array for a pivot table
 
 	public ArrayList<Cell> fillArray(ArrayList<Cell> list) {
-		DataFormatter formatter = new DataFormatter();
-		Iterator<Cell> cellIT = list.iterator();
-		int index = 0;
-		while (cellIT.hasNext()) {
-			Cell cell = cellIT.next();
-			if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-				String format = formatter.formatCellValue(list.get(index));
-				cell.setCellValue(format);
-				index++;
-			}
+		String value;
+		for(int cellNum = 0; cellNum < list.size(); cellNum ++) {
 			
-
 		}
 		
+		for (int i = 0; i < list.size(); i++) {
+			Cell cell = list.get(i);
+			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+				Cell currentCell = list.get(i);
+				value = currentCell.getStringCellValue();
+				list.set(i, currentCell);
+			}
+			
+		}
 		return list;
 	}
 
