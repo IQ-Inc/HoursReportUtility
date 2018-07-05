@@ -14,7 +14,8 @@ public class GetDates {
 	public Date getLastDay(Date date) throws Exception {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(
+				Calendar.DAY_OF_MONTH));
 		return calendar.getTime();
 	}
 	
@@ -24,7 +25,7 @@ public class GetDates {
 		try {
 			dateString = format.format(inDate);
 		} catch (Exception e) {
-			System.out.println("Oooopppssss");
+			System.out.println("Error");
 		}
 		return dateString;
 	}

@@ -22,21 +22,22 @@ public class FileUtility extends HoursReport {
 	static File lastPath;
 
 	public static void findFile() throws IOException {
-		fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
+		fileChooser = new JFileChooser(lastPath);
 		javax.swing.filechooser.FileFilter xlsxFilter = new FileTypeFilter(".xlsx", "Microsoft Excel Documents");
-		fileChooser.addChoosableFileFilter(xlsxFilter);
 		// filter that will only show Excel files
+		fileChooser.addChoosableFileFilter(xlsxFilter);
+		fileChooser.setAcceptAllFileFilterUsed(false);
 		fileChooser.setDialogTitle("Select Input File");
 		int status = fileChooser.showDialog(fileChooser, "Open");
 		try { // options option to read file and executes if yes
 			if (status == JFileChooser.APPROVE_OPTION) {
-				File file = fileChooser.getSelectedFile();
-				fileChooser.setCurrentDirectory(file);
+				lastPath = fileChooser.getSelectedFile();
+				fileChooser.setCurrentDirectory(lastPath);
 				mImport.setEnabled(true);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "File not Found");
 		}
 	}
 
@@ -50,7 +51,7 @@ public class FileUtility extends HoursReport {
 		while (rowIt.hasNext()) {
 			XSSFRow row = (XSSFRow) rowIt.next();
 			Iterator<Cell> cellIt = row.cellIterator();
-
+			// loop that puts data into proper array
 			while (cellIt.hasNext()) {
 				Cell cell = cellIt.next();
 				if ((cell.getColumnIndex() == 0)) {
@@ -68,7 +69,8 @@ public class FileUtility extends HoursReport {
 			}
 		}
 
-		fillArray(projects);
+		FileUtility utility = new FileUtility();
+		utility.fillArray(projects);
 
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
@@ -83,7 +85,7 @@ public class FileUtility extends HoursReport {
 	}
 	// Fills in the blanks in the Array for a pivot table
 
-	public static ArrayList<Cell> fillArray(ArrayList<Cell> list) {
+	public ArrayList<Cell> fillArray(ArrayList<Cell> list) {
 		String value = " ";
 		for (int i = 0; i < list.size(); i++) {
 			Cell cell = list.get(i);
@@ -94,11 +96,10 @@ public class FileUtility extends HoursReport {
 			}
 
 		}
-		System.out.println(list);
 		return list;
-
 	}
 
+	// adds the date to the output file's name
 	public static String getTimeStamp() {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd HHmmss");
 		Date now = new Date();

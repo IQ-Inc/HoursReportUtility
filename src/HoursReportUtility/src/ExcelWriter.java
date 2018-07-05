@@ -28,7 +28,13 @@ public class ExcelWriter extends HoursReport {
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet0 = wb.createSheet("Profitability");
 		XSSFSheet sheet1 = wb.createSheet("Utilization");
+		// create new font for header
+		Font font = wb.createFont();
+		font.setBold(true);
+		font.setColor(Font.COLOR_RED);
+		font.setUnderline(Font.U_SINGLE);
 		CellStyle headCellStyle = wb.createCellStyle();
+		headCellStyle.setFont(font);
 		DataFormat fmt = wb.createDataFormat();
 		CellStyle textStyle = wb.createCellStyle();
 		CellStyle numStyle = wb.createCellStyle();
@@ -37,6 +43,7 @@ public class ExcelWriter extends HoursReport {
 		Row profitHeadRow = sheet0.createRow(0);
 		Row utilHeadRow = sheet1.createRow(0);
 		CreationHelper create = wb.getCreationHelper();
+	
 
 		// creates the profit sheet header
 		for (int i = 0; i < header.length; i++) {
@@ -57,11 +64,29 @@ public class ExcelWriter extends HoursReport {
 			row.createCell(0).setCellValue(create.createRichTextString(projects.get(i).toString()));
 			row.createCell(1).setCellValue(create.createRichTextString(names.get(i).toString()));
 			row.createCell(2).setCellValue(create.createRichTextString(dates.get(i).toString()));
-			row.createCell(3).setCellValue(create.createRichTextString(duration.get(i).toString()));
+			Cell cell = row.createCell(3);
+			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+			Cell hoursCell = duration.get(i);
+			hoursCell.setCellType(Cell.CELL_TYPE_NUMERIC);
+			double value = hoursCell.getNumericCellValue();
+			cell.setCellValue(value);
 			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
 		}
-
 		sheet0.autoSizeColumn(0);
+		//Underlines values that are totals and turns them red
+		Iterator<Row> rowIt = sheet0.rowIterator();
+		while (rowIt.hasNext()) {
+			XSSFRow row = (XSSFRow) rowIt.next();
+			Iterator<Cell> cellIt = row.cellIterator();
+			while (cellIt.hasNext()) {
+				Cell cell = cellIt.next();
+				if(cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+					cell.setCellStyle(headCellStyle);
+				} else {
+					continue;
+				}
+			}
+		}
 
 		try { // Writer to the file
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
@@ -72,10 +97,13 @@ public class ExcelWriter extends HoursReport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
 
 		Desktop dt = Desktop.getDesktop();
 		File file = new File(OUTPUT_FILE);
 		dt.open(file);
 
 	}
+	
 }

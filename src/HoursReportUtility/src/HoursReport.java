@@ -102,7 +102,8 @@ public class HoursReport extends Frame implements ActionListener {
 			try {
 				FileUtility.findFile();
 			} catch (Exception e1) {
-				e1.printStackTrace();}
+				JOptionPane.showMessageDialog(null, "System Error");
+				System.exit(0);}
 			} else if (e.getActionCommand() == "Import") {
 				try {
 					FileUtility.readFile(FileUtility.fileChooser);
