@@ -9,7 +9,7 @@ import javax.swing.JFileChooser;
 
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
-
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
 @SuppressWarnings("serial")
@@ -29,9 +29,15 @@ public class ExcelWriter extends HoursReport {
 		XSSFSheet sheet0 = wb.createSheet("Profitability");
 		XSSFSheet sheet1 = wb.createSheet("Utilization");
 		CellStyle headCellStyle = wb.createCellStyle();
+		DataFormat fmt = wb.createDataFormat();
+		CellStyle textStyle = wb.createCellStyle();
+		CellStyle numStyle = wb.createCellStyle();
+		numStyle.setDataFormat(fmt.getFormat("#"));
+		textStyle.setDataFormat(fmt.getFormat("@"));
 		Row profitHeadRow = sheet0.createRow(0);
 		Row utilHeadRow = sheet1.createRow(0);
-		DataFormatter formatter = new DataFormatter();
+		CreationHelper create = wb.getCreationHelper();
+
 		// creates the profit sheet header
 		for (int i = 0; i < header.length; i++) {
 			Cell cell = profitHeadRow.createCell(i);
@@ -48,27 +54,15 @@ public class ExcelWriter extends HoursReport {
 		// fills the sheets with the data read from Excel File
 		for (int i = 1; i < projects.size(); i++) {
 			Row row = sheet0.createRow(i);
-			Cell statusCell = row.createCell(4);
-			String billing = formatter.formatCellValue(status.get(i));
-			statusCell.setCellValue(billing);
-			if (statusCell.equals(Cell.CELL_TYPE_BLANK)) {
-				status.remove(i);
-			}
-			Cell timeCell = row.createCell(3);
-			String time = formatter.formatCellValue(duration.get(i));
-			timeCell.setCellValue(time);
-			Cell empCell = row.createCell(1);
-			String employee = formatter.formatCellValue(names.get(i));
-			empCell.setCellValue(employee);
-			Cell dateCell = row.createCell(2);
-			String date = formatter.formatCellValue(dates.get(i));
-			dateCell.setCellValue(date);
-			Cell projCell = row.createCell(0);
-			String project = formatter.formatCellValue(projects.get(i));
-			projCell.setCellValue(project);
-
+			row.createCell(0).setCellValue(create.createRichTextString(projects.get(i).toString()));
+			row.createCell(1).setCellValue(create.createRichTextString(names.get(i).toString()));
+			row.createCell(2).setCellValue(create.createRichTextString(dates.get(i).toString()));
+			row.createCell(3).setCellValue(create.createRichTextString(duration.get(i).toString()));
+			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
 		}
+
 		sheet0.autoSizeColumn(0);
+
 		try { // Writer to the file
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 			wb.write(out);
@@ -78,10 +72,10 @@ public class ExcelWriter extends HoursReport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		Desktop dt = Desktop.getDesktop();
 		File file = new File(OUTPUT_FILE);
 		dt.open(file);
-		
+
 	}
 }

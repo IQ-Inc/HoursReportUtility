@@ -68,14 +68,7 @@ public class FileUtility extends HoursReport {
 			}
 		}
 
-		dates.remove(0);
-		projects.remove(0);
-		names.remove(0);
-		duration.remove(0);
-		status.remove(0);
-		FileUtility utility = new FileUtility();
-		utility.fillArray(projects);
-		System.out.println(projects);
+		fillArray(projects);
 
 		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
 		if (n == JOptionPane.OK_OPTION) {
@@ -90,22 +83,20 @@ public class FileUtility extends HoursReport {
 	}
 	// Fills in the blanks in the Array for a pivot table
 
-	public ArrayList<Cell> fillArray(ArrayList<Cell> list) {
-		String value;
-		for(int cellNum = 0; cellNum < list.size(); cellNum ++) {
-			
-		}
-		
+	public static ArrayList<Cell> fillArray(ArrayList<Cell> list) {
+		String value = " ";
 		for (int i = 0; i < list.size(); i++) {
 			Cell cell = list.get(i);
-			if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-				Cell currentCell = list.get(i);
-				value = currentCell.getStringCellValue();
-				list.set(i, currentCell);
+			if (cell.getCellType() != Cell.CELL_TYPE_BLANK) {
+				value = cell.getStringCellValue();
+			} else {
+				cell.setCellValue(value);
 			}
-			
+
 		}
+		System.out.println(list);
 		return list;
+
 	}
 
 	public static String getTimeStamp() {
