@@ -9,8 +9,8 @@ public class HoursReportDriver extends HoursReport {
 		driver.createGUI();
 		
 	}
-	
 		
-	}
+		
+}
 
 

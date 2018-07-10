@@ -43,7 +43,6 @@ public class ExcelWriter extends HoursReport {
 		Row profitHeadRow = sheet0.createRow(0);
 		Row utilHeadRow = sheet1.createRow(0);
 		CreationHelper create = wb.getCreationHelper();
-	
 
 		// creates the profit sheet header
 		for (int i = 0; i < header.length; i++) {
@@ -73,22 +72,9 @@ public class ExcelWriter extends HoursReport {
 			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
 		}
 		sheet0.autoSizeColumn(0);
-		//Underlines values that are totals and turns them red
-		Iterator<Row> rowIt = sheet0.rowIterator();
-		while (rowIt.hasNext()) {
-			XSSFRow row = (XSSFRow) rowIt.next();
-			Iterator<Cell> cellIt = row.cellIterator();
-			while (cellIt.hasNext()) {
-				Cell cell = cellIt.next();
-				if(cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
-					cell.setCellStyle(headCellStyle);
-				} else {
-					continue;
-				}
-			}
-		}
+		
 
-		try { // Writer to the file
+		try { // Writer to the file and opens it
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 			wb.write(out);
 			wb.close();
@@ -97,13 +83,11 @@ public class ExcelWriter extends HoursReport {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 
 		Desktop dt = Desktop.getDesktop();
 		File file = new File(OUTPUT_FILE);
 		dt.open(file);
 
 	}
-	
+
 }

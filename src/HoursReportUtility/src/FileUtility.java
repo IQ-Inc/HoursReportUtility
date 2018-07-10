@@ -7,6 +7,7 @@ import java.util.prefs.Preferences;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow.CellIterator;
 import org.apache.poi.xssf.usermodel.*;
@@ -47,6 +48,31 @@ public class FileUtility extends HoursReport {
 		FileInputStream fInput = new FileInputStream(selectedFile);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
+		XSSFRow headRow = sheet0.getRow(0);
+		int projIndex = 0;
+		int dateIndex = 0;
+		int nameIndex = 0;
+		int timeIndex = 0;
+		int statusIndex = 0;
+		for (int i = 0; i < headRow.getLastCellNum(); i++) {
+			Cell cell = headRow.getCell(i);
+			if (cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+				//empty cell
+				continue;
+			}
+			if (cell != null && cell.getStringCellValue().contains("Project")) {
+				 projIndex = cell.getColumnIndex();
+			} else if (cell != null && cell.getStringCellValue().contains("Date")) {
+				dateIndex = cell.getColumnIndex();
+			} else if(cell != null && cell.getStringCellValue().contains("Name")) {
+				nameIndex = cell.getColumnIndex();
+			} else if (cell != null && cell.getStringCellValue().contains("Billing Status")) {
+				statusIndex = cell.getColumnIndex();
+			} else if (cell != null && cell.getStringCellValue().contains("Duration")) {
+				timeIndex = cell.getColumnIndex();
+			}
+		}
+		System.out.println(projIndex);
 		Iterator<Row> rowIt = sheet0.rowIterator();
 		while (rowIt.hasNext()) {
 			XSSFRow row = (XSSFRow) rowIt.next();
@@ -54,21 +80,21 @@ public class FileUtility extends HoursReport {
 			// loop that puts data into proper array
 			while (cellIt.hasNext()) {
 				Cell cell = cellIt.next();
-				if ((cell.getColumnIndex() == 0)) {
+				if (cell.getColumnIndex() == projIndex) {
 					projects.add(cell);
-				} else if ((cell.getColumnIndex() == 4)) {
+				} else if (cell.getColumnIndex() == dateIndex) {
 					dates.add(cell);
-				} else if ((cell.getColumnIndex() == 6)) {
+				} else if (cell.getColumnIndex() == nameIndex) {
 					names.add(cell);
-				} else if ((cell.getColumnIndex() == 8)) {
+				} else if (cell.getColumnIndex() == timeIndex) {
 					duration.add(cell);
-
-				} else if ((cell.getColumnIndex() == 7)) {
+				}else if (cell.getColumnIndex() == statusIndex) {
 					status.add(cell);
 				}
 			}
 		}
 
+		System.out.println(duration);
 		FileUtility utility = new FileUtility();
 		utility.fillArray(projects);
 

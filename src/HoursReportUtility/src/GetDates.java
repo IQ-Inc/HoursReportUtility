@@ -1,7 +1,12 @@
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class GetDates {
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTAutoFilter;
+
+public class GetDates extends HoursReport {
 	
 	public Date getFirstDay(Date date) throws Exception {
 	Calendar calendar = Calendar.getInstance();
@@ -29,6 +34,4 @@ public class GetDates {
 		}
 		return dateString;
 	}
-	
-	
 }
