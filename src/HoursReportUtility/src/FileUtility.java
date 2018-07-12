@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow.CellIterator;
 import org.apache.poi.xssf.usermodel.*;
 
-public class FileUtility extends HoursReport {
+public class FileUtility {
 
 	static JFileChooser fileChooser;
 	static ArrayList<Cell> projects = new ArrayList<>();
@@ -22,30 +22,8 @@ public class FileUtility extends HoursReport {
 	static ArrayList<Cell> status = new ArrayList<>();
 	static File lastPath;
 
-	public static void findFile() throws IOException {
-		fileChooser = new JFileChooser(lastPath);
-		javax.swing.filechooser.FileFilter xlsxFilter = new FileTypeFilter(".xlsx", "Microsoft Excel Documents");
-		// filter that will only show Excel files
-		fileChooser.addChoosableFileFilter(xlsxFilter);
-		fileChooser.setAcceptAllFileFilterUsed(false);
-		fileChooser.setDialogTitle("Select Input File");
-		int status = fileChooser.showDialog(fileChooser, "Open");
-		try { // options option to read file and executes if yes
-			if (status == JFileChooser.APPROVE_OPTION) {
-				lastPath = fileChooser.getSelectedFile();
-				fileChooser.setCurrentDirectory(lastPath);
-				mImport.setEnabled(true);
-			}
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "File not Found");
-		}
-	}
-
-	public static void readFile(JFileChooser fileChooser) throws Exception {
-		File selectedFile;
-		selectedFile = fileChooser.getSelectedFile();
-		FileInputStream fInput = new FileInputStream(selectedFile);
+	public static void readFile(File selected) throws Exception {
+		FileInputStream fInput = new FileInputStream(selected);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
 		Iterator<Row> rowIt = sheet0.rowIterator();
@@ -68,20 +46,21 @@ public class FileUtility extends HoursReport {
 				}
 			}
 		}
+		System.out.println(projects.size());
+		System.out.println(dates.size());
+		System.out.println(names.size());
+		System.out.println(duration.size());
+		System.out.println(status.size());
+		
 
 		FileUtility utility = new FileUtility();
 		utility.fillArray(projects);
 
-		int n = JOptionPane.showConfirmDialog(fileChooser, "Select Date Range");
-		if (n == JOptionPane.OK_OPTION) {
-			HoursReport report = new HoursReport();
-			report.datePaneGUI();
-		} else if (n == JOptionPane.NO_OPTION) {
-			mImport.setEnabled(false);
-		}
+		
 
 		ExcelWriter.outputFile(projects, dates, names, duration, status);
 		wb.close();
+		
 	}
 	// Fills in the blanks in the Array for a pivot table
 

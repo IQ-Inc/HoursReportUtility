@@ -6,7 +6,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTAutoFilter;
 
-public class GetDates extends HoursReport {
+public class GetDates  {
 	
 	public Date getFirstDay(Date date) throws Exception {
 	Calendar calendar = Calendar.getInstance();

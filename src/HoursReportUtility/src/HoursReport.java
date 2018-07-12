@@ -1,124 +1,82 @@
-import java.awt.BorderLayout;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.awt.*;
 import javax.swing.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import javax.swing.border.EmptyBorder;
+
+
 
 @SuppressWarnings("serial")
-public class HoursReport extends Frame implements ActionListener {
-	JPanel mPane0, mPane1, mDatePane0, mDatePane1, mDatePane2;
-	JTextField  mStartField, mEndField;
-	static JButton mBrowse;
-	JButton mCancel;
-	JButton mNext;
-	JButton mBack;
-	Object sDate;
-	Object eDate;
-	static JButton mImport;
-	JLabel mFileLabel, mStartDate, mEndDate;
-	JFrame mFrame, mDateFrame;
-	static File inputFile;
-	@SuppressWarnings("static-access")
-	public void createGUI() {
-		// Create the GUI
-		mPane0 = new JPanel();// top panel - borderLayout (TextField)
-		mPane1 = new JPanel(); // bottom panel of the window - Flow (buttons)
-		// Buttons
-		mBrowse = createButton(40, 40, "Browse");
-		mCancel = createButton(40, 40, "Cancel");
-		mImport = createButton(40, 40, "Import");
-		mImport.setEnabled(false);
-		mBrowse.addActionListener(this);
-		mCancel.addActionListener(this);
-		mImport.addActionListener(this);
-		mFileLabel = new JLabel("Input Filename");
-		Font labelFont = new Font("SansSerif", Font.BOLD, 15);
-		mFileLabel.setFont(labelFont);
-		// add components to the panel
-		mPane0.add(mFileLabel);
-		mPane1.add(mBrowse);
-		mPane1.add(mCancel);
-		mPane1.add(mImport);
-		// create the frame
-		mFrame = new JFrame("Hours Utility Tool");
-		mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mFrame.setDefaultLookAndFeelDecorated(true);
-		mFrame.add(mPane0, BorderLayout.NORTH);
-		mFrame.add(mPane1, BorderLayout.SOUTH);
-		mFrame.pack();
-		mFrame.setLocationRelativeTo(null);
-		mFrame.setVisible(true);
+public class HoursReport extends JComponent implements PropertyChangeListener {
+	private File file = null; 
+	private DefaultListModel model;
+	private JList list;
+	private JButton removeItem;
+	
+	
+	
+	public HoursReport(JFileChooser chooser) {
+		chooser.addPropertyChangeListener(this);
+		
+		model = new DefaultListModel();
+		list = new JList(model);
+		JScrollPane pane = new JScrollPane(list);
+		pane.setPreferredSize(new Dimension(200,250));
+		
+		removeItem = createRemoveItemButton();
+		
+		setBorder(new EmptyBorder(10,10,10,10));
+		setLayout(new BorderLayout());
+		add(pane);
+		add(removeItem, BorderLayout.SOUTH);
 	}
+	
 
-	public static JButton createButton(int width, int height, String name) {
-		JButton button = new JButton();
-		button.setSize(width, height);
-		button.setText(name);
+	private JButton createRemoveItemButton() {
+		JButton button = new JButton("Remove");
+		button.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed (ActionEvent e) {
+				removeFileFromList();
+			}
+		});
 		return button;
 	}
-
-	public void datePaneGUI() throws Exception {
-		GetDates date = new GetDates();
-		Date sDate = date.getFirstDay(new Date());
-		Date eDate = date.getLastDay(new Date());
-		mStartDate = new JLabel("Start Date");
-		mEndDate = new JLabel("End Date");
-		mDatePane0 = new JPanel(new BorderLayout());
-		mDatePane0.add(mStartDate, BorderLayout.WEST);
-		mDatePane0.add(mEndDate, BorderLayout.EAST);
-		mDatePane1 = new JPanel(new FlowLayout());
-		mStartField = new JTextField(date.convertDateToString(sDate), 12);
-		mEndField = new JTextField(date.convertDateToString(eDate), 12);
-		mDatePane1.add(mStartField);
-		mDatePane1.add(mEndField);
-		mDatePane2 = new JPanel(new FlowLayout());
-		mNext = createButton(40, 40, "Next");
-		mNext.addActionListener(this);
-		mBack = createButton(40, 40, "Back");
-		mBack.addActionListener(this);
-		mDatePane2.add(mBack);
-		mDatePane2.add(mNext);
-		mDateFrame = new JFrame("Change Dates");
-		mDateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		mDateFrame.add(mDatePane0, BorderLayout.PAGE_START);
-		mDateFrame.add(mDatePane1, BorderLayout.CENTER);
-		mDateFrame.add(mDatePane2, BorderLayout.PAGE_END);
-		mDateFrame.pack();
-		mDateFrame.setLocationRelativeTo(mFrame);
-		mDateFrame.setVisible(true);
-
+	
+	private void removeFileFromList() {
+		if (list.getSelectedIndex() != -1) {
+			model.remove(list.getSelectedIndex());
+		}
+	}
+	
+	public DefaultListModel getModel(){
+		return model;
+	}
+	private void addFileToList() {
+		model.addElement(file);
+	}
+	
+	@Override 
+	public void propertyChange(PropertyChangeEvent e) {
+		boolean update = false;
+		String prop = e.getPropertyName();
+		
+		//If directory is changed, don't do anything
+		if(JFileChooser.DIRECTORY_CHANGED_PROPERTY.equals(prop)) {
+			file = null;
+			update = true;
+			//If a file became selected, find out which one.
+		} else if(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
+			file = (File) e.getNewValue();
+			update = true;
+		}
+		
+		if(update && file != null) {
+			addFileToList();
+		}
 	}
 
-	// Add all Action Listeners
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand() == "Browse") {
-			try {
-				FileUtility.findFile();
-			} catch (Exception e1) {
-				JOptionPane.showMessageDialog(null, "System Error");
-				System.exit(0);}
-			} else if (e.getActionCommand() == "Import") {
-				try {
-					FileUtility.readFile(FileUtility.fileChooser);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					
-				}
-			} else if (e.getActionCommand() == "Cancel") {
-					System.exit(0);
-		} else if (e.getActionCommand() == "Next") {
-					mImport.setEnabled(true);
-					System.out.println(mStartField.getText() + " " + mEndField.getText());
-		} else if (e.getActionCommand() == "Back") {
-					mDateFrame.setVisible(false);
-					FileUtility.fileChooser.setVisible(false);
-			}
-	} 
 }

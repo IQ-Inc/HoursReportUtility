@@ -12,11 +12,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
-@SuppressWarnings("serial")
-public class ExcelWriter extends HoursReport {
+public class ExcelWriter {
 	static JFileChooser fileChooser;
 	public static final String OUTPUT_FILE = "Hours_" + FileUtility.getTimeStamp() + ".xlsx";
-
+	
 	public static void outputFile(List<Cell> projects, List<Cell> dates, List<Cell> names, List<Cell> duration,
 			List<Cell> status) throws IOException {
 		String[] header = { "Project", "Employee", "Date", "Hours", "Billing Status", "Cost", "Invoiced",
@@ -70,23 +69,11 @@ public class ExcelWriter extends HoursReport {
 			double value = hoursCell.getNumericCellValue();
 			cell.setCellValue(value);
 			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
+
 		}
 		sheet0.autoSizeColumn(0);
-		
-
-		try { // Writer to the file and opens it
-			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
-			wb.write(out);
-			wb.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		Desktop dt = Desktop.getDesktop();
-		File file = new File(OUTPUT_FILE);
-		dt.open(file);
+		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
+		wb.write(out);
 
 	}
 
