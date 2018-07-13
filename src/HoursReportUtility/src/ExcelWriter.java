@@ -11,6 +11,9 @@ import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTAutoFilter;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFilter;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFilterColumn;
 
 public class ExcelWriter {
 	static JFileChooser fileChooser;
@@ -72,9 +75,19 @@ public class ExcelWriter {
 
 		}
 		sheet0.autoSizeColumn(0);
+		sheet0.setAutoFilter(CellRangeAddress.valueOf("B1"));
+		ExcelWriter writer = new ExcelWriter();
+		
 		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 		wb.write(out);
-
+		writer.resetRow(sheet0);
+	}
+	public void resetRow(XSSFSheet sheet) {
+		
+		for (int i = 0; i < sheet.getLastRowNum(); i++) {
+			XSSFRow row = sheet.getRow(i);
+			row.setRowNum(i);
+		}
 	}
 
 }

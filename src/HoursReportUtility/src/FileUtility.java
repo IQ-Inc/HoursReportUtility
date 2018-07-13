@@ -46,11 +46,7 @@ public class FileUtility {
 				}
 			}
 		}
-		System.out.println(projects.size());
-		System.out.println(dates.size());
-		System.out.println(names.size());
-		System.out.println(duration.size());
-		System.out.println(status.size());
+		
 		
 
 		FileUtility utility = new FileUtility();
