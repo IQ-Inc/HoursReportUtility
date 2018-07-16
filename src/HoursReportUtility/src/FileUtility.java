@@ -46,17 +46,21 @@ public class FileUtility {
 				}
 			}
 		}
-		
-		
 
 		FileUtility utility = new FileUtility();
 		utility.fillArray(projects);
 
-		
-
 		ExcelWriter.outputFile(projects, dates, names, duration, status);
 		wb.close();
 		
+		
+		
+		FileWriter writer = new FileWriter();
+		writer.removeDupes(names);
+		System.out.println(names);
+		writer.writeToTxt(names);
+		System.out.println(names);
+
 	}
 	// Fills in the blanks in the Array for a pivot table
 
