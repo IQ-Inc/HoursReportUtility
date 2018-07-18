@@ -12,7 +12,7 @@ public class HoursReportDriver extends ExcelWriter {
 				JFileChooser chooser = new JFileChooser();
 				HoursReport report = new HoursReport(chooser);
 				chooser.setAccessory(report);
-
+				// reads the file if 'ok' selected
 				int open = chooser.showOpenDialog(chooser);
 				if (open == JFileChooser.APPROVE_OPTION) {
 					DefaultListModel model = report.getModel();

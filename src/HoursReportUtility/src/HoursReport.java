@@ -17,8 +17,8 @@ import org.apache.poi.ss.usermodel.Cell;
 @SuppressWarnings("serial")
 public class HoursReport extends JComponent implements PropertyChangeListener {
 	private File file = null; 
-	private DefaultListModel model;
-	private JList list;
+	private DefaultListModel<File> model;
+	private JList<File> list;
 	private JButton removeItem;
 	
 	
@@ -26,8 +26,8 @@ public class HoursReport extends JComponent implements PropertyChangeListener {
 	public HoursReport(JFileChooser chooser) {
 		chooser.addPropertyChangeListener(this);
 		
-		model = new DefaultListModel();
-		list = new JList(model);
+		model = new DefaultListModel<File>();
+		list = new JList<File>(model);
 		JScrollPane pane = new JScrollPane(list);
 		pane.setPreferredSize(new Dimension(200,250));
 		
@@ -57,7 +57,7 @@ public class HoursReport extends JComponent implements PropertyChangeListener {
 		}
 	}
 	
-	public DefaultListModel getModel(){
+	public DefaultListModel<File> getModel(){
 		return model;
 	}
 	private void addFileToList() {
@@ -83,6 +83,8 @@ public class HoursReport extends JComponent implements PropertyChangeListener {
 			addFileToList();
 		}
 	}
+	
+	
 	
 	
 

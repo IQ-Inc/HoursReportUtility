@@ -23,6 +23,7 @@ public class FileUtility {
 	static File lastPath;
 
 	public static void readFile(File selected) throws Exception {
+		// Creates the input stream, workbooks and worksheets
 		FileInputStream fInput = new FileInputStream(selected);
 		XSSFWorkbook wb = new XSSFWorkbook(fInput);
 		XSSFSheet sheet0 = wb.getSheetAt(1); // <-----change to 0 when finished with tool
@@ -52,16 +53,10 @@ public class FileUtility {
 
 		ExcelWriter.outputFile(projects, dates, names, duration, status);
 		wb.close();
-		
-		
-		
-		FileWriter writer = new FileWriter();
-		writer.removeDupes(names);
-		System.out.println(names);
-		writer.writeToTxt(names);
-		System.out.println(names);
 
 	}
+	
+	
 	// Fills in the blanks in the Array for a pivot table
 
 	public ArrayList<Cell> fillArray(ArrayList<Cell> list) {

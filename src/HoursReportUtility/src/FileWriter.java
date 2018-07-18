@@ -5,11 +5,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 
 public class FileWriter {
+
 	public void writeToTxt(ArrayList<Cell> list) throws IOException {
 		String employee = null;
 		File file = new File("C://temp//employees.txt");
@@ -18,9 +18,20 @@ public class FileWriter {
 		FileOutputStream out = new FileOutputStream(file);
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
 
-		for (Cell cell : list) {
-			employee = format.formatCellValue(cell);
-			writer.println(employee);
+		if (file.isFile() && !file.isDirectory()) {
+			for (Cell cell : list) {
+				employee = format.formatCellValue(cell);
+				writer.println(employee);
+
+			}
+			System.out.println("exists");
+		} else if (!file.isFile() && !file.isDirectory()) {
+			file.createNewFile();
+			for (Cell cell : list) {
+				employee = format.formatCellValue(cell);
+				writer.println(employee);
+			}
+			System.out.println("Created");
 		}
 		writer.flush();
 		writer.close();
@@ -36,7 +47,6 @@ public class FileWriter {
 				}
 			}
 		}
-		
-		
+
 	}
 }
