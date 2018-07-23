@@ -1,7 +1,7 @@
 import java.io.File;
 import javax.swing.*;
 
-public class HoursReportDriver extends ExcelWriter {
+public class HoursReportDriver {
 
 	public static void main(String[] args) {
 
@@ -21,7 +21,7 @@ public class HoursReportDriver extends ExcelWriter {
 
 						try {
 
-							FileUtility.readFile(file);
+							FileUtility.readFile(file, null, null);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

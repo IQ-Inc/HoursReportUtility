@@ -72,6 +72,7 @@ public class ExcelWriter {
 			cell.setCellValue(dateHeader[i] + "-" + year);
 			cell.setCellStyle(headCellStyle);
 		}
+		
 
 		// fills the sheets with the data read from Excel File
 		for (int i = 1; i < projects.size(); i++) {
@@ -90,7 +91,8 @@ public class ExcelWriter {
 		}
 		sheet0.autoSizeColumn(0);
 
-		int result = JOptionPane.showConfirmDialog(null, "Filter Results?");
+		int result = JOptionPane.showConfirmDialog(null,
+				"Filter Results? Select 'No' To Continue");
 
 		if (result == JOptionPane.OK_OPTION) {
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
@@ -98,8 +100,8 @@ public class ExcelWriter {
 			wb.close();
 			Filter filter = new Filter();
 
-			// if OK the filter GUI will appear and user can select people
-			filter.filterGUI();
+			// THIS NEEDS TO BE FIXED!! FILTER GUI KEEPS APPEARING SHOULD ONLY APPEAR ONCE!!
+			filter.filterGUI(names);
 		} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CANCEL_OPTION) {
 			// if no then the output is written to the output file
 			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);

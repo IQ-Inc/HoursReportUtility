@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -25,13 +26,13 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Filter {
-	JComboBox<String> namesBox;
-	static JTextArea nameArea;
 
-	public void filterGUI() {
+	static JTextArea nameArea;
+	JComboBox<String> namesBox;
+
+	public void filterGUI(List<Cell> names) {
 		Filter filter = new Filter();
-		FileUtility utility = new FileUtility();
-		namesBox = new JComboBox<String>(filter.fillCBox(utility.names)); // added to top pane
+		namesBox = new JComboBox<String>(filter.fillCBox(names));
 		nameArea = new JTextArea(10, 15); // will go to middle pane
 		nameArea.setEditable(false);
 		namesBox.addActionListener(new ActionListener() {
@@ -46,10 +47,10 @@ public class Filter {
 		filterButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Filter filter = new Filter();
+
 				try {
-					filter.readOutFile(ExcelWriter.OUTPUT_FILE, nameArea);
-				} catch (IOException e1) {
+					FileUtility.readFile(null, ExcelWriter.OUTPUT_FILE, nameArea);
+				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -98,53 +99,39 @@ public class Filter {
 		for (int i = 0; i < n; i++) {
 			names[i] = (String) list.get(i).getStringCellValue();
 		}
-
 		Arrays.sort(names);
 		return names;
 	}
 
-	public void readOutFile(String outFile, JTextArea area) throws IOException {
-		File output = new File(outFile);
-		String[] fNames = area.getText().split("\n");
-		ArrayList<String> filterNames = new ArrayList<>(Arrays.asList(names));
-		for (int i = 0; i < filterNames.size(); i++) {
-			if (filterNames.get(i).equals("")) {
-				filterNames.remove(i);
-				i--;
-			}
-		}
-		FileUtility.names.clear();
-		FileUtility.dates.clear();
-		FileUtility.duration.clear();
-		FileUtility.projects.clear();
-		FileUtility.status.clear();
-
-		FileInputStream fInput = new FileInputStream(output);
-		XSSFWorkbook wb = new XSSFWorkbook(fInput);
-		XSSFSheet sheet = wb.getSheetAt(0);
-		Iterator<Row> rowIT = sheet.rowIterator();
-		while (rowIT.hasNext()) {
-			XSSFRow row = (XSSFRow) rowIT.next();
-			Iterator<Cell> cellIT = row.cellIterator();
-			while (cellIT.hasNext()) {
-				Cell cell = cellIT.next();
-				if (cell.getColumnIndex() == 0) {
-					FileUtility.projects.add(cell);
-				} else if (cell.getColumnIndex() == 1) {
-					FileUtility.names.add(cell);
-				} else if (cell.getColumnIndex() == 2) {
-					FileUtility.dates.add(cell);
-				} else if (cell.getColumnIndex() == 3) {
-					FileUtility.duration.add(cell);
-				} else {
-					FileUtility.status.add(cell);
+	// Implement methods to copy new contents from the arrays to output file
+	// Need to compare TextArea to contents in the array so they can be filtered
+	public void filter(ArrayList<Cell> names, ArrayList<Cell> dates, ArrayList<Cell> duration, ArrayList<Cell> projects,
+			ArrayList<Cell> status, JTextArea area) {
+		ArrayList<Cell> fNames = new ArrayList<Cell>();
+		ArrayList<Cell> fDates = new ArrayList<Cell>();
+		ArrayList<Cell> fDuration = new ArrayList<Cell>();
+		ArrayList<Cell> fStatus = new ArrayList<Cell>();
+		ArrayList<Cell> fProjects = new ArrayList<Cell>();
+		String[] empNames = area.getText().split("\n");
+		ArrayList<String> areaNames = new ArrayList<String>(Arrays.asList(empNames));
+		System.out.println(areaNames);
+		for (int i = 0; i < areaNames.size(); i++) {
+			for (int j = 0; j < names.size(); j++) {
+				if (areaNames.get(i).equals(names.get(j).getStringCellValue())) {
+					fNames.add(names.get(j));
+					fDates.add(dates.get(j));
+					fDuration.add(duration.get(j));
+					fStatus.add(status.get(j));
+					fProjects.add(projects.get(j));
 				}
 			}
-
 		}
-		
+
+		try {
+			ExcelWriter.outputFile(fProjects, fDates, fNames, fDuration, fStatus);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	 // Implement methods to copy new contents from the arrays to output file
-	// Need to compare TextArea to contents in the array so they can be filtered
 
 }
