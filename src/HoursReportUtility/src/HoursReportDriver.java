@@ -15,18 +15,22 @@ public class HoursReportDriver {
 				// reads the file if 'ok' selected
 				int open = chooser.showOpenDialog(chooser);
 				if (open == JFileChooser.APPROVE_OPTION) {
-					DefaultListModel model = report.getModel();
+					DefaultListModel<File> model = report.getModel();
 					for (int i = 0; i < model.getSize(); i++) {
+						System.out.println(i);
 						file = (File) model.getElementAt(i);
+						System.out.println(model.size());
+						
 
 						try {
-
-							FileUtility.readFile(file, null, null);
+							FileUtility utility = new FileUtility();
+							utility.readFile(file, null, null);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
-					  
+					 Filter filter = new Filter();
+					 filter.filterGUI(FileUtility.names);
 					
 				}
 				

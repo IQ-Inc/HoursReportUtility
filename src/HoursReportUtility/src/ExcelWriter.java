@@ -89,11 +89,14 @@ public class ExcelWriter {
 			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
 
 		}
+		FileUtility utility = new FileUtility();
+		
 		sheet0.autoSizeColumn(0);
 		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 		wb.write(out);
-		Filter filter = new Filter();
-		filter.filterGUI(names);
+		System.out.println(projects.size());
+		//Filter filter = new Filter();
+		//filter.filterGUI(names);
 
 		
 

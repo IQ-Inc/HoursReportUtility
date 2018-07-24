@@ -1,6 +1,8 @@
 import java.io.*;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
 import java.util.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -8,14 +10,14 @@ import org.apache.poi.xssf.usermodel.*;
 public class FileUtility {
 
 	static JFileChooser fileChooser;
-	ArrayList<Cell> projects = new ArrayList<>();
-	ArrayList<Cell> dates = new ArrayList<>();
-	ArrayList<Cell> names = new ArrayList<>();
-	ArrayList<Cell> duration = new ArrayList<>();
-	ArrayList<Cell> status = new ArrayList<>();
+static ArrayList<Cell> projects = new ArrayList<>();
+static ArrayList<Cell> dates = new ArrayList<>();
+static ArrayList<Cell> names = new ArrayList<>();
+static ArrayList<Cell> duration = new ArrayList<>();
+static ArrayList<Cell> status = new ArrayList<>();
 	File lastPath;
 
-	public static void readFile(File selected, String outFile, JTextArea area) throws Exception {
+	public void readFile(File selected, String outFile, JTextArea area) throws Exception {
 		// Creates the input stream, workbooks and worksheets
 		FileUtility utility = new FileUtility();
 		if (outFile == null || area == null) { // Block that reads the original file
@@ -32,22 +34,22 @@ public class FileUtility {
 					Cell cell = cellIt.next();
 					if (cell.getColumnIndex() == 1) {
 
-						utility.projects.add(cell);
+						FileUtility.projects.add(cell);
 					} else if (cell.getColumnIndex() == 5) {
-						utility.dates.add(cell);
+						FileUtility.dates.add(cell);
 					} else if (cell.getColumnIndex() == 7) {
-						utility.names.add(cell);
+						FileUtility.names.add(cell);
 					} else if (cell.getColumnIndex() == 11) {
-						utility.duration.add(cell);
+						FileUtility.duration.add(cell);
 					} else if (cell.getColumnIndex() == 9) {
-						utility.status.add(cell);
+						FileUtility.status.add(cell);
 					}
 				}
 			}
 
-			utility.fillArray(utility.projects);
+			utility.fillArray(FileUtility.projects);
 
-			ExcelWriter.outputFile(utility.projects, utility.dates, utility.names, utility.duration, utility.status);
+			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration, FileUtility.status);
 			wb.close();
 
 		} else // Else block that reads the created file
@@ -62,11 +64,7 @@ public class FileUtility {
 				}
 			}
 
-			utility.names.clear();
-			utility.dates.clear();
-			utility.duration.clear();
-			utility.projects.clear();
-			utility.status.clear();
+			
 
 			FileInputStream fInput = new FileInputStream(output);
 			XSSFWorkbook wb = new XSSFWorkbook(fInput);
@@ -78,24 +76,25 @@ public class FileUtility {
 				while (cellIT.hasNext()) {
 					Cell cell = cellIT.next();
 					if (cell.getColumnIndex() == 0) {
-						utility.projects.add(cell);
+						FileUtility.projects.add(cell);
 					} else if (cell.getColumnIndex() == 1) {
-						utility.names.add(cell);
+						FileUtility.names.add(cell);
 					} else if (cell.getColumnIndex() == 2) {
-						utility.dates.add(cell);
+						FileUtility.dates.add(cell);
 					} else if (cell.getColumnIndex() == 3) {
-						utility.duration.add(cell);
+						FileUtility.duration.add(cell);
 					} else if (cell.getColumnIndex() == 4) {
-						utility.status.add(cell);
+						FileUtility.status.add(cell);
 					}
 
 				}
 
 			}
+			
 			wb.close();
-			Filter filter = new Filter();
-			filter.filter(utility.names, utility.dates, utility.duration, 
-					utility.projects, utility.status, Filter.nameArea);
+			//Filter filter = new Filter();
+			//filter.filter(utility.names, utility.dates, utility.duration, 
+					//utility.projects, utility.status, Filter.nameArea);
 
 		}
 

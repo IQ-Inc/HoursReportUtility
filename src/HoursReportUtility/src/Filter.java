@@ -5,26 +5,17 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Filter {
 
@@ -50,7 +41,11 @@ public class Filter {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					FileUtility.readFile(null, ExcelWriter.OUTPUT_FILE, nameArea);
+					FileUtility utility = new FileUtility();
+					utility.readFile(null, ExcelWriter.OUTPUT_FILE, nameArea);
+					Filter filter = new Filter();
+					filter.filter(FileUtility.names, FileUtility.dates, FileUtility.duration, FileUtility.projects,
+							FileUtility.status, Filter.nameArea);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
