@@ -90,24 +90,12 @@ public class ExcelWriter {
 
 		}
 		sheet0.autoSizeColumn(0);
+		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
+		wb.write(out);
+		Filter filter = new Filter();
+		filter.filterGUI(names);
 
-		int result = JOptionPane.showConfirmDialog(null,
-				"Filter Results? Select 'No' To Continue");
-
-		if (result == JOptionPane.OK_OPTION) {
-			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
-			wb.write(out);
-			wb.close();
-			Filter filter = new Filter();
-
-			// THIS NEEDS TO BE FIXED!! FILTER GUI KEEPS APPEARING SHOULD ONLY APPEAR ONCE!!
-			filter.filterGUI(names);
-		} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CANCEL_OPTION) {
-			// if no then the output is written to the output file
-			FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
-			wb.write(out);
-			wb.close();
-		}
+		
 
 	}
 

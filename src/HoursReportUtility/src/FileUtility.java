@@ -2,14 +2,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
 import java.util.*;
-import java.util.prefs.Preferences;
-
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-
-import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFRow.CellIterator;
 import org.apache.poi.xssf.usermodel.*;
 
 public class FileUtility {
@@ -56,7 +49,7 @@ public class FileUtility {
 
 			ExcelWriter.outputFile(utility.projects, utility.dates, utility.names, utility.duration, utility.status);
 			wb.close();
-			
+
 		} else // Else block that reads the created file
 		{
 			File output = new File(outFile);
@@ -101,9 +94,9 @@ public class FileUtility {
 			}
 			wb.close();
 			Filter filter = new Filter();
-			filter.filter(utility.names, utility.dates, utility.duration, utility.projects, utility.status,
-					Filter.nameArea);
-			
+			filter.filter(utility.names, utility.dates, utility.duration, 
+					utility.projects, utility.status, Filter.nameArea);
+
 		}
 
 	}

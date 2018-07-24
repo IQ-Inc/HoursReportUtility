@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -63,6 +64,23 @@ public class Filter {
 				nameArea.replaceSelection("");
 			}
 		});
+		JButton exitButton = createButton(100, 50, "Write");
+		exitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Desktop dt = Desktop.getDesktop();
+				File file = new File(ExcelWriter.OUTPUT_FILE);
+				if(file.exists()) {
+					try {
+						dt.open(file);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				System.exit(0);
+			}
+		});
 		JPanel topPane = new JPanel(new BorderLayout(10, 10));
 		JPanel midPane = new JPanel(new BorderLayout(10, 10));
 		JPanel bottomPane = new JPanel(new FlowLayout());
@@ -70,6 +88,7 @@ public class Filter {
 		midPane.add(nameArea);
 		bottomPane.add(filterButton);
 		bottomPane.add(removeButton);
+		bottomPane.add(exitButton);
 		JFrame frame = new JFrame("Employee Filter");
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,10 +122,11 @@ public class Filter {
 		return names;
 	}
 
-	// Implement methods to copy new contents from the arrays to output file
-	// Need to compare TextArea to contents in the array so they can be filtered
-	public void filter(ArrayList<Cell> names, ArrayList<Cell> dates, ArrayList<Cell> duration, ArrayList<Cell> projects,
-			ArrayList<Cell> status, JTextArea area) {
+	//  Methods to copy new contents from the arrays to output file
+	
+	public void filter(ArrayList<Cell> names, ArrayList<Cell> dates, 
+			ArrayList<Cell> duration, ArrayList<Cell> projects,
+		ArrayList<Cell> status, JTextArea area) {
 		ArrayList<Cell> fNames = new ArrayList<Cell>();
 		ArrayList<Cell> fDates = new ArrayList<Cell>();
 		ArrayList<Cell> fDuration = new ArrayList<Cell>();
@@ -114,7 +134,7 @@ public class Filter {
 		ArrayList<Cell> fProjects = new ArrayList<Cell>();
 		String[] empNames = area.getText().split("\n");
 		ArrayList<String> areaNames = new ArrayList<String>(Arrays.asList(empNames));
-		System.out.println(areaNames);
+		
 		for (int i = 0; i < areaNames.size(); i++) {
 			for (int j = 0; j < names.size(); j++) {
 				if (areaNames.get(i).equals(names.get(j).getStringCellValue())) {
