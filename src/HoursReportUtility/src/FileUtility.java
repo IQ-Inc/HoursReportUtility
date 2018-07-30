@@ -10,11 +10,11 @@ import org.apache.poi.xssf.usermodel.*;
 public class FileUtility {
 
 	static JFileChooser fileChooser;
-static ArrayList<Cell> projects = new ArrayList<>();
-static ArrayList<Cell> dates = new ArrayList<>();
-static ArrayList<Cell> names = new ArrayList<>();
-static ArrayList<Cell> duration = new ArrayList<>();
-static ArrayList<Cell> status = new ArrayList<>();
+	static ArrayList<Cell> projects = new ArrayList<>();
+	static ArrayList<Cell> dates = new ArrayList<>();
+	static ArrayList<Cell> names = new ArrayList<>();
+	static ArrayList<Cell> duration = new ArrayList<>();
+	static ArrayList<Cell> status = new ArrayList<>();
 	File lastPath;
 
 	public void readFile(File selected, String outFile, JTextArea area) throws Exception {
@@ -49,7 +49,8 @@ static ArrayList<Cell> status = new ArrayList<>();
 
 			utility.fillArray(FileUtility.projects);
 
-			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration, FileUtility.status);
+			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration,
+					FileUtility.status);
 			wb.close();
 
 		} else // Else block that reads the created file
@@ -63,8 +64,6 @@ static ArrayList<Cell> status = new ArrayList<>();
 					i--;
 				}
 			}
-
-			
 
 			FileInputStream fInput = new FileInputStream(output);
 			XSSFWorkbook wb = new XSSFWorkbook(fInput);
@@ -88,16 +87,9 @@ static ArrayList<Cell> status = new ArrayList<>();
 					}
 
 				}
-
 			}
-			
 			wb.close();
-			//Filter filter = new Filter();
-			//filter.filter(utility.names, utility.dates, utility.duration, 
-					//utility.projects, utility.status, Filter.nameArea);
-
 		}
-
 	}
 
 	// Fills in the blanks in the Array for a pivot table

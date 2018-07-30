@@ -4,7 +4,7 @@ import javax.swing.*;
 public class HoursReportDriver {
 
 	public static void main(String[] args) {
-
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -17,10 +17,8 @@ public class HoursReportDriver {
 				if (open == JFileChooser.APPROVE_OPTION) {
 					DefaultListModel<File> model = report.getModel();
 					for (int i = 0; i < model.getSize(); i++) {
-						System.out.println(i);
+
 						file = (File) model.getElementAt(i);
-						System.out.println(model.size());
-						
 
 						try {
 							FileUtility utility = new FileUtility();
@@ -29,13 +27,13 @@ public class HoursReportDriver {
 							e.printStackTrace();
 						}
 					}
-					 Filter filter = new Filter();
-					 filter.filterGUI(FileUtility.names);
-					
+					Filter filter = new Filter();
+					filter.filterGUI(FileUtility.names);
+
 				}
-				
+
 			}
-			
+
 		});
 
 	}

@@ -1,32 +1,10 @@
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.LayoutManager;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTAutoFilter;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFilter;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFilterColumn;
 
 public class ExcelWriter {
 	static JFileChooser fileChooser;
@@ -89,14 +67,12 @@ public class ExcelWriter {
 			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
 
 		}
-		FileUtility utility = new FileUtility();
-		
 		sheet0.autoSizeColumn(0);
 		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 		wb.write(out);
-		System.out.println(projects.size());
-		//Filter filter = new Filter();
-		//filter.filterGUI(names);
+		wb.close();
+		
+		
 
 		
 
