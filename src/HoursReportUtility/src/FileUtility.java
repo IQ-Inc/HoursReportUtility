@@ -17,10 +17,10 @@ public class FileUtility {
 	static ArrayList<Cell> status = new ArrayList<>();
 	File lastPath;
 
-	public void readFile(File selected, String outFile, JTextArea area) throws Exception {
+	public void readFile(File selected, String outFile, ArrayList<String> checkNames) throws Exception {
 		// Creates the input stream, workbooks and worksheets
 		FileUtility utility = new FileUtility();
-		if (outFile == null || area == null) { // Block that reads the original file
+		if (outFile == null || checkNames == null) { // Block that reads the original file
 
 			FileInputStream fInput = new FileInputStream(selected);
 			XSSFWorkbook wb = new XSSFWorkbook(fInput);
@@ -49,22 +49,21 @@ public class FileUtility {
 
 			utility.fillArray(FileUtility.projects);
 
+			utility.removeBlanks(projects, dates, names, duration, status);
+
 			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration,
 					FileUtility.status);
 			wb.close();
 
 		} else // Else block that reads the created file
 		{
-			File output = new File(outFile);
-			String[] fNames = area.getText().split("\n");
-			ArrayList<String> filterNames = new ArrayList<>(Arrays.asList(fNames));
-			for (int i = 0; i < filterNames.size(); i++) {
-				if (filterNames.get(i).equals("")) {
-					filterNames.remove(i);
-					i--;
-				}
-			}
+			names.clear();
+			projects.clear();
+			dates.clear();
+			duration.clear();
+			status.clear();
 
+			File output = new File(outFile);
 			FileInputStream fInput = new FileInputStream(output);
 			XSSFWorkbook wb = new XSSFWorkbook(fInput);
 			XSSFSheet sheet = wb.getSheetAt(0);
@@ -106,6 +105,26 @@ public class FileUtility {
 
 		}
 		return list;
+	}
+
+	public void removeBlanks(ArrayList<Cell> projects, ArrayList<Cell> dates, ArrayList<Cell> names,
+			ArrayList<Cell> duration, ArrayList<Cell> status) {
+
+		for (int i = 0; i < projects.size(); i++) {
+			if (names.get(i).getCellType() == Cell.CELL_TYPE_BLANK) {
+				projects.get(i).setCellValue("");
+				dates.get(i).setCellValue("");
+				names.get(i).setCellValue("");
+				duration.get(i).setCellValue(0);
+				status.get(i).setCellValue("");
+			}
+		}
+
+		for (Cell time : duration) {
+			if (time.getCellType() == Cell.CELL_TYPE_FORMULA) {
+				time.setCellValue(0);
+			}
+		}
 	}
 
 	// adds the date to the output file's name

@@ -53,8 +53,9 @@ public class ExcelWriter {
 		
 
 		// fills the sheets with the data read from Excel File
-		for (int i = 1; i < projects.size(); i++) {
-			Row row = sheet0.createRow(i);
+		
+		for (int i = 0; i < projects.size(); i++) {
+			Row row = sheet0.createRow(i + 1);
 			row.createCell(0).setCellValue(create.createRichTextString(projects.get(i).toString()));
 			row.createCell(1).setCellValue(create.createRichTextString(names.get(i).toString()));
 			row.createCell(2).setCellValue(create.createRichTextString(dates.get(i).toString()));
@@ -67,6 +68,8 @@ public class ExcelWriter {
 			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
 
 		}
+		
+		
 		sheet0.autoSizeColumn(0);
 		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 		wb.write(out);

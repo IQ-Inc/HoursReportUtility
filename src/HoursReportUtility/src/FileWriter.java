@@ -10,7 +10,7 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 
 public class FileWriter {
 
-	public void writeToTxt(ArrayList<Cell> list) throws IOException {
+	public void writeToTxt(List<Cell> names) throws IOException {
 		String employee = null;
 		File file = new File("C://temp//employees.txt");
 		// creates the stream to write and creates a new file
@@ -19,7 +19,7 @@ public class FileWriter {
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(out));
 
 		if (file.isFile() && !file.isDirectory()) {
-			for (Cell cell : list) {
+			for (Cell cell : names) {
 				employee = format.formatCellValue(cell);
 				writer.println(employee);
 
@@ -27,7 +27,7 @@ public class FileWriter {
 			System.out.println("exists");
 		} else if (!file.isFile() && !file.isDirectory()) {
 			file.createNewFile();
-			for (Cell cell : list) {
+			for (Cell cell : names) {
 				employee = format.formatCellValue(cell);
 				writer.println(employee);
 			}
