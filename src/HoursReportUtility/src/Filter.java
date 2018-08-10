@@ -2,6 +2,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +30,8 @@ public class Filter {
 		JScrollPane sPane = new JScrollPane(filter.fillPanel(names));
 		sPane.setPreferredSize(new Dimension(200, 200));
 		sPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
+		sPane.getVerticalScrollBar().setUnitIncrement(20);
+		
 		JButton filterBut = filter.createButton(70, 50, "Filter");
 		filterBut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -41,7 +44,7 @@ public class Filter {
 					e1.printStackTrace();
 				}
 				filter.filter(FileUtility.names, FileUtility.dates, FileUtility.duration, FileUtility.projects,
-						FileUtility.status, Filter.boxText);
+						FileUtility.status, Filter.boxText, FileUtility.notBillType);
 
 			}
 		});
@@ -72,7 +75,6 @@ public class Filter {
 
 		FileWriter writer = new FileWriter();
 		writer.removeDupes(names);
-		
 
 		// Removes "Name" from list "names"
 		for (int i = 0; i < names.size(); i++) {
@@ -90,6 +92,26 @@ public class Filter {
 
 		// Create checkBoxes for all names in the list and adds to the pane
 		for (int i = 0; i < empNames.length; i++) {
+			if (i == 0) {
+				//Action Listener for select all - selects or deselects all
+				JCheckBox selectAll = new JCheckBox("Select All");
+				selectAll.addItemListener(new ItemListener() {
+					@Override 
+					public void itemStateChanged(ItemEvent e) {
+						if (selectAll.isSelected()) {
+							Filter filter = new Filter();
+							filter.checkAll(panel);
+						} else if (!selectAll.isSelected()) {
+							Filter filter = new Filter();
+							filter.deselectAll(panel);
+						}
+					}
+				});
+				panel.add(selectAll);
+			}
+			if (empNames[i].equals("")) {
+				continue;
+			}
 			checkBox = new JCheckBox(empNames[i]);
 			checkBoxes.add(checkBox);
 			checkBox.addActionListener(new ActionListener() {
@@ -102,27 +124,25 @@ public class Filter {
 							boxText.add(box.getText());
 						}
 					}
-
 				}
-
 			});
 			panel.add(checkBox);
-		}
 
+		}
 		panel.setLayout(new GridLayout(0, 1));
 		return panel;
-
 	}
 
 	// Methods to copy new contents from the arrays to output file
 
 	public void filter(ArrayList<Cell> names, ArrayList<Cell> dates, ArrayList<Cell> duration, ArrayList<Cell> projects,
-			ArrayList<Cell> status, ArrayList<String> checked) {
+			ArrayList<Cell> status, ArrayList<String> checked, ArrayList<Cell> type) {
 		ArrayList<Cell> fNames = new ArrayList<Cell>();
 		ArrayList<Cell> fDates = new ArrayList<Cell>();
 		ArrayList<Cell> fDuration = new ArrayList<Cell>();
 		ArrayList<Cell> fStatus = new ArrayList<Cell>();
 		ArrayList<Cell> fProjects = new ArrayList<Cell>();
+		ArrayList<Cell> fType = new ArrayList<Cell>();
 // loop creates filter arrays 
 		for (int i = 0; i < checked.size(); i++) {
 
@@ -133,16 +153,44 @@ public class Filter {
 					fDuration.add(duration.get(j));
 					fStatus.add(status.get(j));
 					fProjects.add(projects.get(j));
+					fType.add(type.get(j));
 				}
-			}
-
+			}			
 		}
 
 		try {
-			ExcelWriter.outputFile(fProjects, fDates, fNames, fDuration, fStatus);
+			ExcelWriter.outputFile(fProjects, fDates, fNames, fDuration, fStatus, fType);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	public void checkAll(JPanel scroll) {
+		ArrayList<Component> components = new ArrayList<>();
+		for (int i = 0; i < scroll.getComponentCount(); i++) {
+			if(scroll.getComponent(i) instanceof JCheckBox) {
+			components.add(scroll.getComponent(i));
+			}
+		}
+		for (Component component : components) {
+			if (component instanceof JCheckBox) {
+				((JCheckBox) component).setSelected(true);
+			}
+		}
+	}
+	public void deselectAll(JPanel scroll) {
+		ArrayList<Component> components = new ArrayList<>();
+		for (int i = 0; i < scroll.getComponentCount(); i++) {
+			if (scroll.getComponent(i) instanceof JCheckBox) {
+				components.add(scroll.getComponent(i));
+			}
+		}
+		for (Component component : components) {
+			if (component instanceof JCheckBox) {
+				((JCheckBox) component).setSelected(false);
+			}
+		}
+		
+	}
 }
+
+

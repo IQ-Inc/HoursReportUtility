@@ -15,6 +15,7 @@ public class FileUtility {
 	static ArrayList<Cell> names = new ArrayList<>();
 	static ArrayList<Cell> duration = new ArrayList<>();
 	static ArrayList<Cell> status = new ArrayList<>();
+	static ArrayList<Cell> notBillType = new ArrayList<>();
 	File lastPath;
 
 	public void readFile(File selected, String outFile, ArrayList<String> checkNames) throws Exception {
@@ -32,8 +33,8 @@ public class FileUtility {
 				// loop that puts data into proper array
 				while (cellIt.hasNext()) {
 					Cell cell = cellIt.next();
-					if (cell.getColumnIndex() == 1) {
-
+					if (cell.getColumnIndex() == 1) { //&& 
+							//!cell.getStringCellValue().contains("No job assigned")) {
 						FileUtility.projects.add(cell);
 					} else if (cell.getColumnIndex() == 5) {
 						FileUtility.dates.add(cell);
@@ -43,16 +44,17 @@ public class FileUtility {
 						FileUtility.duration.add(cell);
 					} else if (cell.getColumnIndex() == 9) {
 						FileUtility.status.add(cell);
+					} else if (cell.getColumnIndex() == 2) {
+						FileUtility.notBillType.add(cell);
 					}
 				}
 			}
-
 			utility.fillArray(FileUtility.projects);
-
-			utility.removeBlanks(projects, dates, names, duration, status);
+			utility.fillArray(notBillType);
+			utility.removeBlanks(projects, dates, names, duration, status, notBillType);
 
 			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration,
-					FileUtility.status);
+					FileUtility.status, FileUtility.notBillType);
 			wb.close();
 
 		} else // Else block that reads the created file
@@ -76,14 +78,16 @@ public class FileUtility {
 					if (cell.getColumnIndex() == 0) {
 						FileUtility.projects.add(cell);
 					} else if (cell.getColumnIndex() == 1) {
-						FileUtility.names.add(cell);
+						FileUtility.notBillType.add(cell);
 					} else if (cell.getColumnIndex() == 2) {
-						FileUtility.dates.add(cell);
+						FileUtility.names.add(cell);
 					} else if (cell.getColumnIndex() == 3) {
-						FileUtility.duration.add(cell);
+						FileUtility.dates.add(cell);
 					} else if (cell.getColumnIndex() == 4) {
+						FileUtility.duration.add(cell);
+					} else if (cell.getColumnIndex() == 5) {
 						FileUtility.status.add(cell);
-					}
+					} 
 
 				}
 			}
@@ -102,13 +106,13 @@ public class FileUtility {
 			} else {
 				cell.setCellValue(value);
 			}
-
+			
 		}
 		return list;
 	}
 
 	public void removeBlanks(ArrayList<Cell> projects, ArrayList<Cell> dates, ArrayList<Cell> names,
-			ArrayList<Cell> duration, ArrayList<Cell> status) {
+			ArrayList<Cell> duration, ArrayList<Cell> status, ArrayList<Cell> nBType) {
 
 		for (int i = 0; i < projects.size(); i++) {
 			if (names.get(i).getCellType() == Cell.CELL_TYPE_BLANK) {
@@ -123,6 +127,12 @@ public class FileUtility {
 		for (Cell time : duration) {
 			if (time.getCellType() == Cell.CELL_TYPE_FORMULA) {
 				time.setCellValue(0);
+			}
+		}
+		for (Cell type : nBType) {
+			if (type.getStringCellValue().contains("Total") || 
+					type.getStringCellValue().contains("Contract")) {
+				type.setCellType(Cell.CELL_TYPE_BLANK);
 			}
 		}
 	}

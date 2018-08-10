@@ -11,9 +11,9 @@ public class ExcelWriter {
 	public static final String OUTPUT_FILE = "Hours_" + FileUtility.getTimeStamp() + ".xlsx";
 
 	public static void outputFile(List<Cell> projects, List<Cell> dates, List<Cell> names, List<Cell> duration,
-			List<Cell> status) throws IOException {
-		String[] header = { "Project", "Employee", "Date", "Hours", "Billing Status", "Cost", "Invoiced",
-				"Profitability" };
+			List<Cell> status, List<Cell> nBType) throws IOException {
+		String[] header = { "Project", "Non-Billable Type", "Employee", "Dates", "Hours", "Billing Status", "Cost",
+				"Invoiced", "Profitability"};
 		String[] dateHeader = { " ", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
 				"Dec" };
 
@@ -57,15 +57,16 @@ public class ExcelWriter {
 		for (int i = 0; i < projects.size(); i++) {
 			Row row = sheet0.createRow(i + 1);
 			row.createCell(0).setCellValue(create.createRichTextString(projects.get(i).toString()));
-			row.createCell(1).setCellValue(create.createRichTextString(names.get(i).toString()));
-			row.createCell(2).setCellValue(create.createRichTextString(dates.get(i).toString()));
-			Cell cell = row.createCell(3);
+			row.createCell(1).setCellValue(create.createRichTextString(nBType.get(i).toString()));
+			row.createCell(2).setCellValue(create.createRichTextString(names.get(i).toString()));
+			row.createCell(3).setCellValue(create.createRichTextString(dates.get(i).toString()));
+			Cell cell = row.createCell(4);
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			Cell hoursCell = duration.get(i);
 			hoursCell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			double value = hoursCell.getNumericCellValue();
 			cell.setCellValue(value);
-			row.createCell(4).setCellValue(create.createRichTextString(status.get(i).toString()));
+			row.createCell(5).setCellValue(create.createRichTextString(status.get(i).toString()));
 
 		}
 		
