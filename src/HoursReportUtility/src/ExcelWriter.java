@@ -69,7 +69,7 @@ public class ExcelWriter {
 			double value = hoursCell.getNumericCellValue();
 			cell.setCellValue(value);
 			row.createCell(5).setCellValue(create.createRichTextString(status.get(i).toString()));
-
+			// this is a new comment
 		}
 		
 		
