@@ -1,4 +1,5 @@
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
 import javax.swing.plaf.synth.SynthSpinnerUI;
@@ -49,10 +50,11 @@ public class FileUtility {
 					}
 				}
 			}
+			
 			utility.fillArray(FileUtility.projects);
 			utility.fillArray(notBillType);
 			utility.removeBlanks(projects, dates, names, duration, status, notBillType);
-
+			utility.convertDates(dates, wb);
 			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration,
 					FileUtility.status, FileUtility.notBillType);
 			wb.close();
@@ -143,5 +145,23 @@ public class FileUtility {
 		Date now = new Date();
 		String strDate = df.format(now);
 		return strDate;
+	}
+	
+	public void convertDates(List<Cell> dates, XSSFWorkbook wb) {
+		SimpleDateFormat df = new SimpleDateFormat("MM/yyyy");
+		for (Cell date : dates) {
+			if (date.getCellType() == Cell.CELL_TYPE_BLANK) {
+				continue;
+			} else {
+				date.setCellType(Cell.CELL_TYPE_NUMERIC);
+				Date cellDate = date.getDateCellValue();
+				
+				String strDate = df.format(cellDate);
+				date.setCellValue(strDate);
+				
+			}
+		}
+		
+		
 	}
 }

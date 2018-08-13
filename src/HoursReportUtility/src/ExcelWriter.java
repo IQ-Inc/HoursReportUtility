@@ -59,7 +59,9 @@ public class ExcelWriter {
 			row.createCell(0).setCellValue(create.createRichTextString(projects.get(i).toString()));
 			row.createCell(1).setCellValue(create.createRichTextString(nBType.get(i).toString()));
 			row.createCell(2).setCellValue(create.createRichTextString(names.get(i).toString()));
-			row.createCell(3).setCellValue(create.createRichTextString(dates.get(i).toString()));
+			row.createCell(3).setCellValue(dates.get(i).toString());
+			
+			// Insert code to convert dates here 
 			Cell cell = row.createCell(4);
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			Cell hoursCell = duration.get(i);

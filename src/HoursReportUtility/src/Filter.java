@@ -13,6 +13,7 @@ import javax.swing.*;
 import org.apache.poi.ss.usermodel.Cell;
 
 public class Filter {
+	JFileChooser chooser;
 	Filter filter;
 	JButton filterBut;
 	JCheckBox checkBox;
@@ -31,6 +32,7 @@ public class Filter {
 		sPane.setPreferredSize(new Dimension(200, 200));
 		sPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		sPane.getVerticalScrollBar().setUnitIncrement(20);
+		sPane.setWheelScrollingEnabled(true);
 		
 		JButton filterBut = filter.createButton(70, 50, "Filter");
 		filterBut.addActionListener(new ActionListener() {
@@ -48,6 +50,14 @@ public class Filter {
 
 			}
 		});
+		// Start here with the back button - figure out how to do it 
+		JButton backButton = filter.createButton(70, 50, "Back");
+		backButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					System.out.println("Back");
+			}
+		});
+		bottomPanel.add(backButton);
 		bottomPanel.add(filterBut);
 		containerPanel.setLayout(new BorderLayout());
 		containerPanel.add(sPane, BorderLayout.NORTH);
