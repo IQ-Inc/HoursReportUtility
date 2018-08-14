@@ -34,8 +34,8 @@ public class FileUtility {
 				// loop that puts data into proper array
 				while (cellIt.hasNext()) {
 					Cell cell = cellIt.next();
-					if (cell.getColumnIndex() == 1) { //&& 
-							//!cell.getStringCellValue().contains("No job assigned")) {
+					if (cell.getColumnIndex() == 1) { // &&
+						// !cell.getStringCellValue().contains("No job assigned")) {
 						FileUtility.projects.add(cell);
 					} else if (cell.getColumnIndex() == 5) {
 						FileUtility.dates.add(cell);
@@ -50,13 +50,14 @@ public class FileUtility {
 					}
 				}
 			}
-			
+
 			utility.fillArray(FileUtility.projects);
 			utility.fillArray(notBillType);
 			utility.removeBlanks(projects, dates, names, duration, status, notBillType);
-			utility.convertDates(dates, wb);
+			
 			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration,
 					FileUtility.status, FileUtility.notBillType);
+			utility.convertDates(dates, wb);
 			wb.close();
 
 		} else // Else block that reads the created file
@@ -89,10 +90,11 @@ public class FileUtility {
 						FileUtility.duration.add(cell);
 					} else if (cell.getColumnIndex() == 5) {
 						FileUtility.status.add(cell);
-					} 
+					}
 
 				}
 			}
+
 			wb.close();
 		}
 	}
@@ -108,7 +110,7 @@ public class FileUtility {
 			} else {
 				cell.setCellValue(value);
 			}
-			
+
 		}
 		return list;
 	}
@@ -132,8 +134,7 @@ public class FileUtility {
 			}
 		}
 		for (Cell type : nBType) {
-			if (type.getStringCellValue().contains("Total") || 
-					type.getStringCellValue().contains("Contract")) {
+			if (type.getStringCellValue().contains("Total") || type.getStringCellValue().contains("Contract")) {
 				type.setCellType(Cell.CELL_TYPE_BLANK);
 			}
 		}
@@ -146,22 +147,20 @@ public class FileUtility {
 		String strDate = df.format(now);
 		return strDate;
 	}
-	
+
 	public void convertDates(List<Cell> dates, XSSFWorkbook wb) {
 		SimpleDateFormat df = new SimpleDateFormat("MM/yyyy");
-		for (Cell date : dates) {
-			if (date.getCellType() == Cell.CELL_TYPE_BLANK) {
-				continue;
+		for (int i = 0; i < names.size(); i++) {
+			if (dates.get(i).getCellType() == Cell.CELL_TYPE_BLANK) {
+				dates.set(i, dates.get(i));
 			} else {
-				date.setCellType(Cell.CELL_TYPE_NUMERIC);
-				Date cellDate = date.getDateCellValue();
-				
-				String strDate = df.format(cellDate);
-				date.setCellValue(strDate);
-				
+				dates.get(i).setCellType(Cell.CELL_TYPE_NUMERIC);
+				Date cellDate = dates.get(i).getDateCellValue();
+				String date = df.format(cellDate);
+				dates.get(i).setCellValue(date);
+
 			}
+
 		}
-		
-		
 	}
 }

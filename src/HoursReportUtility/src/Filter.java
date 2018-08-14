@@ -13,6 +13,7 @@ import javax.swing.*;
 import org.apache.poi.ss.usermodel.Cell;
 
 public class Filter {
+	JFrame frame;
 	JFileChooser chooser;
 	Filter filter;
 	JButton filterBut;
@@ -33,7 +34,7 @@ public class Filter {
 		sPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		sPane.getVerticalScrollBar().setUnitIncrement(20);
 		sPane.setWheelScrollingEnabled(true);
-		
+
 		JButton filterBut = filter.createButton(70, 50, "Filter");
 		filterBut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -50,11 +51,20 @@ public class Filter {
 
 			}
 		});
-		// Start here with the back button - figure out how to do it 
+		// Start here with the back button - figure out how to do it
 		JButton backButton = filter.createButton(70, 50, "Back");
 		backButton.addActionListener(new ActionListener() {
+			// Starts a new Thread when "Back" is Pressed
 			public void actionPerformed(ActionEvent e) {
-					System.out.println("Back");
+				FileUtility.names.clear();
+				FileUtility.dates.clear();
+				FileUtility.duration.clear();
+				FileUtility.notBillType.clear();
+				FileUtility.projects.clear();
+				FileUtility.status.clear();
+				frame.setVisible(false);
+				(new Thread(new HoursReportDriver())).start();
+
 			}
 		});
 		bottomPanel.add(backButton);
@@ -63,7 +73,7 @@ public class Filter {
 		containerPanel.add(sPane, BorderLayout.NORTH);
 
 		containerPanel.add(bottomPanel, BorderLayout.SOUTH);
-		JFrame frame = new JFrame("Employee Filter");
+		frame = new JFrame("Employee Filter");
 		frame.add(containerPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JFrame.setDefaultLookAndFeelDecorated(true);
@@ -103,10 +113,10 @@ public class Filter {
 		// Create checkBoxes for all names in the list and adds to the pane
 		for (int i = 0; i < empNames.length; i++) {
 			if (i == 0) {
-				//Action Listener for select all - selects or deselects all
+				// Action Listener for select all - selects or deselects all
 				JCheckBox selectAll = new JCheckBox("Select All");
 				selectAll.addItemListener(new ItemListener() {
-					@Override 
+					@Override
 					public void itemStateChanged(ItemEvent e) {
 						if (selectAll.isSelected()) {
 							Filter filter = new Filter();
@@ -165,7 +175,7 @@ public class Filter {
 					fProjects.add(projects.get(j));
 					fType.add(type.get(j));
 				}
-			}			
+			}
 		}
 
 		try {
@@ -174,11 +184,12 @@ public class Filter {
 			e.printStackTrace();
 		}
 	}
+
 	public void checkAll(JPanel scroll) {
 		ArrayList<Component> components = new ArrayList<>();
 		for (int i = 0; i < scroll.getComponentCount(); i++) {
-			if(scroll.getComponent(i) instanceof JCheckBox) {
-			components.add(scroll.getComponent(i));
+			if (scroll.getComponent(i) instanceof JCheckBox) {
+				components.add(scroll.getComponent(i));
 			}
 		}
 		for (Component component : components) {
@@ -187,6 +198,7 @@ public class Filter {
 			}
 		}
 	}
+
 	public void deselectAll(JPanel scroll) {
 		ArrayList<Component> components = new ArrayList<>();
 		for (int i = 0; i < scroll.getComponentCount(); i++) {
@@ -199,8 +211,6 @@ public class Filter {
 				((JCheckBox) component).setSelected(false);
 			}
 		}
-		
+
 	}
 }
-
-

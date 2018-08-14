@@ -13,7 +13,7 @@ public class ExcelWriter {
 	public static void outputFile(List<Cell> projects, List<Cell> dates, List<Cell> names, List<Cell> duration,
 			List<Cell> status, List<Cell> nBType) throws IOException {
 		String[] header = { "Project", "Non-Billable Type", "Employee", "Dates", "Hours", "Billing Status", "Cost",
-				"Invoiced", "Profitability"};
+				"Invoiced", "Profitability" };
 		String[] dateHeader = { " ", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov",
 				"Dec" };
 
@@ -50,18 +50,16 @@ public class ExcelWriter {
 			cell.setCellValue(dateHeader[i] + "-" + year);
 			cell.setCellStyle(headCellStyle);
 		}
-		
 
 		// fills the sheets with the data read from Excel File
-		
+
 		for (int i = 0; i < projects.size(); i++) {
 			Row row = sheet0.createRow(i + 1);
 			row.createCell(0).setCellValue(create.createRichTextString(projects.get(i).toString()));
 			row.createCell(1).setCellValue(create.createRichTextString(nBType.get(i).toString()));
 			row.createCell(2).setCellValue(create.createRichTextString(names.get(i).toString()));
 			row.createCell(3).setCellValue(dates.get(i).toString());
-			
-			// Insert code to convert dates here 
+			// Insert code to convert dates here
 			Cell cell = row.createCell(4);
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			Cell hoursCell = duration.get(i);
@@ -71,16 +69,11 @@ public class ExcelWriter {
 			row.createCell(5).setCellValue(create.createRichTextString(status.get(i).toString()));
 			// this is a new comment
 		}
-		
-		
+
 		sheet0.autoSizeColumn(0);
 		FileOutputStream out = new FileOutputStream(OUTPUT_FILE);
 		wb.write(out);
 		wb.close();
-		
-		
-
-		
 
 	}
 
