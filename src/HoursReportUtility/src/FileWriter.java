@@ -24,20 +24,20 @@ public class FileWriter {
 				writer.println(employee);
 
 			}
-			System.out.println("exists");
+			
 		} else if (!file.isFile() && !file.isDirectory()) {
 			file.createNewFile();
 			for (Cell cell : names) {
 				employee = format.formatCellValue(cell);
 				writer.println(employee);
 			}
-			System.out.println("Created");
+			
 		}
 		writer.flush();
 		writer.close();
 
 	}
-
+	// removes the duplicate names for the text file
 	public void removeDupes(List<Cell> list) {
 		for (int i = 0; i < list.size(); i++) {
 			for (int j = i + 1; j < list.size(); j++) {

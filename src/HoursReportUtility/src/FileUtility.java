@@ -17,7 +17,6 @@ public class FileUtility {
 	static ArrayList<Cell> duration = new ArrayList<>();
 	static ArrayList<Cell> status = new ArrayList<>();
 	static ArrayList<Cell> notBillType = new ArrayList<>();
-	File lastPath;
 
 	public void readFile(File selected, String outFile, ArrayList<String> checkNames) throws Exception {
 		// Creates the input stream, workbooks and worksheets
@@ -34,8 +33,7 @@ public class FileUtility {
 				// loop that puts data into proper array
 				while (cellIt.hasNext()) {
 					Cell cell = cellIt.next();
-					if (cell.getColumnIndex() == 1) { // &&
-						// !cell.getStringCellValue().contains("No job assigned")) {
+					if (cell.getColumnIndex() == 1) {
 						FileUtility.projects.add(cell);
 					} else if (cell.getColumnIndex() == 5) {
 						FileUtility.dates.add(cell);
@@ -54,10 +52,10 @@ public class FileUtility {
 			utility.fillArray(FileUtility.projects);
 			utility.fillArray(notBillType);
 			utility.removeBlanks(projects, dates, names, duration, status, notBillType);
-			
+			utility.convertDates(dates, wb);
 			ExcelWriter.outputFile(FileUtility.projects, FileUtility.dates, FileUtility.names, FileUtility.duration,
 					FileUtility.status, FileUtility.notBillType);
-			utility.convertDates(dates, wb);
+
 			wb.close();
 
 		} else // Else block that reads the created file
@@ -114,10 +112,10 @@ public class FileUtility {
 		}
 		return list;
 	}
-
+	
 	public void removeBlanks(ArrayList<Cell> projects, ArrayList<Cell> dates, ArrayList<Cell> names,
 			ArrayList<Cell> duration, ArrayList<Cell> status, ArrayList<Cell> nBType) {
-
+		// if employee column is blank - sets the row to blank
 		for (int i = 0; i < projects.size(); i++) {
 			if (names.get(i).getCellType() == Cell.CELL_TYPE_BLANK) {
 				projects.get(i).setCellValue("");
@@ -127,12 +125,13 @@ public class FileUtility {
 				status.get(i).setCellValue("");
 			}
 		}
-
+		// sets formula rows to 0 so doesn't interfere with pivot table 
 		for (Cell time : duration) {
 			if (time.getCellType() == Cell.CELL_TYPE_FORMULA) {
 				time.setCellValue(0);
 			}
 		}
+		// removes rows containing the total contract information
 		for (Cell type : nBType) {
 			if (type.getStringCellValue().contains("Total") || type.getStringCellValue().contains("Contract")) {
 				type.setCellType(Cell.CELL_TYPE_BLANK);
@@ -148,16 +147,19 @@ public class FileUtility {
 		return strDate;
 	}
 
+	// converts the date to MM/yyyy - Only works with one file - not sure how to get
+	// it to
+	// work with both
 	public void convertDates(List<Cell> dates, XSSFWorkbook wb) {
 		SimpleDateFormat df = new SimpleDateFormat("MM/yyyy");
 		for (int i = 0; i < names.size(); i++) {
-			if (dates.get(i).getCellType() == Cell.CELL_TYPE_BLANK) {
-				dates.set(i, dates.get(i));
-			} else {
-				dates.get(i).setCellType(Cell.CELL_TYPE_NUMERIC);
+			if (dates.get(i).getCellType() == Cell.CELL_TYPE_NUMERIC) {
+
 				Date cellDate = dates.get(i).getDateCellValue();
 				String date = df.format(cellDate);
 				dates.get(i).setCellValue(date);
+			} else {
+				continue;
 
 			}
 

@@ -59,7 +59,6 @@ public class ExcelWriter {
 			row.createCell(1).setCellValue(create.createRichTextString(nBType.get(i).toString()));
 			row.createCell(2).setCellValue(create.createRichTextString(names.get(i).toString()));
 			row.createCell(3).setCellValue(dates.get(i).toString());
-			// Insert code to convert dates here
 			Cell cell = row.createCell(4);
 			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 			Cell hoursCell = duration.get(i);
@@ -67,7 +66,7 @@ public class ExcelWriter {
 			double value = hoursCell.getNumericCellValue();
 			cell.setCellValue(value);
 			row.createCell(5).setCellValue(create.createRichTextString(status.get(i).toString()));
-			// this is a new comment
+			
 		}
 
 		sheet0.autoSizeColumn(0);

@@ -23,7 +23,7 @@ public class Filter {
 	static ArrayList<String> boxText;
 
 	public void filterGUI(List<Cell> names) {
-		// Create instance of Class and all containers needed for the frame
+		// Creates the GUI
 		Filter filter = new Filter();
 		JPanel containerPanel = new JPanel(new BorderLayout());
 
@@ -51,7 +51,7 @@ public class Filter {
 
 			}
 		});
-		// Start here with the back button - figure out how to do it
+
 		JButton backButton = filter.createButton(70, 50, "Back");
 		backButton.addActionListener(new ActionListener() {
 			// Starts a new Thread when "Back" is Pressed
@@ -82,7 +82,7 @@ public class Filter {
 		frame.setVisible(true);
 
 	}
-
+	// creates new buttons
 	public JButton createButton(int width, int height, String text) {
 		JButton button = new JButton(text);
 		button.setPreferredSize(new Dimension(width, height));
@@ -90,7 +90,7 @@ public class Filter {
 		return button;
 
 	}
-
+	// fills the Scroll Pane with empployee name
 	public JPanel fillPanel(List<Cell> names) {
 
 		FileWriter writer = new FileWriter();
@@ -163,7 +163,7 @@ public class Filter {
 		ArrayList<Cell> fStatus = new ArrayList<Cell>();
 		ArrayList<Cell> fProjects = new ArrayList<Cell>();
 		ArrayList<Cell> fType = new ArrayList<Cell>();
-// loop creates filter arrays 
+// loop creates filtered arrays 
 		for (int i = 0; i < checked.size(); i++) {
 
 			for (int j = 1; j < names.size(); j++) {
@@ -184,7 +184,7 @@ public class Filter {
 			e.printStackTrace();
 		}
 	}
-
+	// methods for "Select All" checkbox
 	public void checkAll(JPanel scroll) {
 		ArrayList<Component> components = new ArrayList<>();
 		for (int i = 0; i < scroll.getComponentCount(); i++) {
